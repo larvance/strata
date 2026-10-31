@@ -14,6 +14,7 @@ strata_layout = { path = "../strata_layout" }
 strata_render = { path = "../strata_render" }
 strata_js = { path = "../strata_js" }
 strata_platform = { path = "../strata_platform" }
+strata_device = { path = "../strata_device" }
 strata_icons = { path = "../strata_icons" }
 strata_ui = { path = "../strata_ui" }
 strata_primitives = { path = "../strata_primitives" }

@@ -8,6 +8,7 @@ pub use strata_icons as icons;
 pub use strata_layout as layout;
 pub use strata_macro::*;
 pub use strata_platform as platform;
+pub use strata_device as device;
 pub use strata_render as render;
 pub use strata_style as style;
 pub use strata_ui as ui;
@@ -35,7 +36,8 @@ pub mod prelude {
         JsObject, JsValue,
     };
     pub use strata_macro::{component, dynamic, rsx};
-    pub use strata_platform::WindowConfig;
+    pub use strata_platform::prelude::*;
+    pub use strata_device::prelude::*;
     pub use strata_render::scene3d::{
         AmbientLight, BoxGeometry, Camera3D, Canvas3D, DirectionalLight, Geometry3D, Light3D,
         Material3D, Mesh, Mesh3D, PerspectiveCamera, Scene3D, ShaderMaterial, ShaderSource,

@@ -9,6 +9,7 @@ members = [
     "crates/strata_render",
     "crates/strata_js",
     "crates/strata_platform",
+    "crates/strata_device",
     "crates/strata_codegen_js",
     "crates/strata_cli",
     "crates/strata_icons",

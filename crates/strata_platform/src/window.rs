@@ -1,0 +1,293 @@
+//! Window configuration, platform window traits, and mock implementations.
+
+use std::collections::VecDeque;
+use crate::events::PlatformEvent;
+
+/// Operating mode of the platform window.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum WindowMode {
+    #[default]
+    Windowed,
+    BorderlessFullscreen,
+    ExclusiveFullscreen,
+    Minimized,
+    Maximized,
+}
+
+/// Window frame decoration style.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum WindowDecoration {
+    #[default]
+    NativeOs,
+    ClientSideDecorations,
+    FramelessTransparent,
+}
+
+/// Operating system color scheme / theme preference.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum ThemeMode {
+    #[default]
+    System,
+    Light,
+    Dark,
+}
+
+/// Cursor icon style.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum CursorIcon {
+    #[default]
+    Default,
+    Pointer,
+    Text,
+    Crosshair,
+    Move,
+    NotAllowed,
+    Wait,
+    Grab,
+    Grabbing,
+    ResizeN,
+    ResizeS,
+    ResizeE,
+    ResizeW,
+    ResizeNe,
+    ResizeNw,
+    ResizeSe,
+    ResizeSw,
+    ColResize,
+    RowResize,
+}
+
+/// Configuration used when creating or reconfiguring a platform window.
+#[derive(Debug, Clone)]
+pub struct WindowConfig {
+    pub title: String,
+    pub width: u32,
+    pub height: u32,
+    pub min_width: Option<u32>,
+    pub min_height: Option<u32>,
+    pub max_width: Option<u32>,
+    pub max_height: Option<u32>,
+    pub resizable: bool,
+    pub mode: WindowMode,
+    pub decoration: WindowDecoration,
+    pub theme: ThemeMode,
+    pub transparent: bool,
+    pub always_on_top: bool,
+}
+
+impl Default for WindowConfig {
+    fn default() -> Self {
+        Self {
+            title: "Strata Application".to_string(),
+            width: 1280,
+            height: 800,
+            min_width: Some(320),
+            min_height: Some(240),
+            max_width: None,
+            max_height: None,
+            resizable: true,
+            mode: WindowMode::Windowed,
+            decoration: WindowDecoration::NativeOs,
+            theme: ThemeMode::System,
+            transparent: false,
+            always_on_top: false,
+        }
+    }
+}
+
+/// Abstract platform window trait defining common cross-platform window operations.
+pub trait PlatformWindow {
+    fn title(&self) -> &str;
+    fn set_title(&mut self, title: &str);
+    fn size(&self) -> (u32, u32);
+    fn set_size(&mut self, width: u32, height: u32);
+    fn scale_factor(&self) -> f32;
+    fn set_scale_factor(&mut self, scale_factor: f32);
+    fn mode(&self) -> WindowMode;
+    fn set_mode(&mut self, mode: WindowMode);
+    fn is_focused(&self) -> bool;
+    fn set_focused(&mut self, focused: bool);
+    fn cursor(&self) -> CursorIcon;
+    fn set_cursor(&mut self, cursor: CursorIcon);
+    fn request_redraw(&mut self);
+    fn is_redraw_requested(&self) -> bool;
+    fn poll_events(&mut self) -> Vec<PlatformEvent>;
+    fn push_event(&mut self, event: PlatformEvent);
+}
+
+/// Headless mock platform window for deterministic testing, CI automation, and headless rendering.
+#[derive(Debug, Clone)]
+pub struct MockPlatformWindow {
+    pub config: WindowConfig,
+    pub scale_factor: f32,
+    pub is_focused: bool,
+    pub cursor: CursorIcon,
+    pub redraw_requested: bool,
+    pub event_queue: VecDeque<PlatformEvent>,
+}
+
+impl MockPlatformWindow {
+    /// Creates a new mock window with the specified configuration.
+    pub fn new(config: WindowConfig) -> Self {
+        Self {
+            config,
+            scale_factor: 1.0,
+            is_focused: true,
+            cursor: CursorIcon::Default,
+            redraw_requested: false,
+            event_queue: VecDeque::new(),
+        }
+    }
+
+    /// Creates a mock window with default configuration.
+    pub fn new_mock() -> Self {
+        Self::new(WindowConfig::default())
+    }
+
+    /// Injects an event into the window's event queue.
+    pub fn inject_event(&mut self, event: PlatformEvent) {
+        self.push_event(event);
+    }
+
+    /// Consumes and clears the redraw request flag.
+    pub fn take_redraw_request(&mut self) -> bool {
+        let requested = self.redraw_requested;
+        self.redraw_requested = false;
+        requested
+    }
+}
+
+impl PlatformWindow for MockPlatformWindow {
+    fn title(&self) -> &str {
+        &self.config.title
+    }
+
+    fn set_title(&mut self, title: &str) {
+        self.config.title = title.to_string();
+    }
+
+    fn size(&self) -> (u32, u32) {
+        (self.config.width, self.config.height)
+    }
+
+    fn set_size(&mut self, width: u32, height: u32) {
+        self.config.width = width;
+        self.config.height = height;
+        self.push_event(PlatformEvent::WindowResized { width, height });
+    }
+
+    fn scale_factor(&self) -> f32 {
+        self.scale_factor
+    }
+
+    fn set_scale_factor(&mut self, scale_factor: f32) {
+        self.scale_factor = scale_factor;
+        self.push_event(PlatformEvent::ScaleFactorChanged { scale_factor });
+    }
+
+    fn mode(&self) -> WindowMode {
+        self.config.mode
+    }
+
+    fn set_mode(&mut self, mode: WindowMode) {
+        self.config.mode = mode;
+    }
+
+    fn is_focused(&self) -> bool {
+        self.is_focused
+    }
+
+    fn set_focused(&mut self, focused: bool) {
+        self.is_focused = focused;
+        self.push_event(PlatformEvent::WindowFocused(focused));
+    }
+
+    fn cursor(&self) -> CursorIcon {
+        self.cursor
+    }
+
+    fn set_cursor(&mut self, cursor: CursorIcon) {
+        self.cursor = cursor;
+    }
+
+    fn request_redraw(&mut self) {
+        self.redraw_requested = true;
+    }
+
+    fn is_redraw_requested(&self) -> bool {
+        self.redraw_requested
+    }
+
+    fn poll_events(&mut self) -> Vec<PlatformEvent> {
+        self.event_queue.drain(..).collect()
+    }
+
+    fn push_event(&mut self, event: PlatformEvent) {
+        self.event_queue.push_back(event);
+    }
+}
+
+/// Control flow returned by event loop handlers.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum EventLoopControl {
+    #[default]
+    Poll,
+    Wait,
+    Exit,
+}
+
+/// Abstract platform event loop trait.
+pub trait EventLoop {
+    fn run<F>(&mut self, handler: F)
+    where
+        F: FnMut(PlatformEvent, &mut EventLoopControl);
+}
+
+/// Headless mock event loop for simulated frame dispatching and testing.
+#[derive(Debug, Default)]
+pub struct MockEventLoop {
+    pending_events: VecDeque<PlatformEvent>,
+    control: EventLoopControl,
+}
+
+impl MockEventLoop {
+    pub fn new() -> Self {
+        Self {
+            pending_events: VecDeque::new(),
+            control: EventLoopControl::Poll,
+        }
+    }
+
+    pub fn queue_event(&mut self, event: PlatformEvent) {
+        self.pending_events.push_back(event);
+    }
+
+    pub fn step<F>(&mut self, mut handler: F) -> EventLoopControl
+    where
+        F: FnMut(PlatformEvent, &mut EventLoopControl),
+    {
+        while let Some(event) = self.pending_events.pop_front() {
+            handler(event, &mut self.control);
+            if self.control == EventLoopControl::Exit {
+                return EventLoopControl::Exit;
+            }
+        }
+        self.control
+    }
+}
+
+impl EventLoop for MockEventLoop {
+    fn run<F>(&mut self, mut handler: F)
+    where
+        F: FnMut(PlatformEvent, &mut EventLoopControl),
+    {
+        while self.control != EventLoopControl::Exit {
+            if self.pending_events.is_empty() {
+                break;
+            }
+            if self.step(&mut handler) == EventLoopControl::Exit {
+                break;
+            }
+        }
+    }
+}
