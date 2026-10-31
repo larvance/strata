@@ -52,6 +52,7 @@ version = "0.1.0"
 dependencies = [
  "strata",
  "strata_codegen_js",
+ "strata_dom",
 ]
 
 [[package]]
