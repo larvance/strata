@@ -8,3 +8,4 @@ description = "Chromium-parity Box Model, Flexbox (L1), and CSS Grid (L2) layout
 
 [dependencies]
 strata_style = { path = "../strata_style" }
+strata_primitives = { path = "../strata_primitives" }

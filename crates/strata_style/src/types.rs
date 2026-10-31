@@ -58,6 +58,14 @@ impl Dimension {
     }
 }
 
+/// Box sizing model (CSS box-sizing).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub enum BoxSizing {
+    #[default]
+    BorderBox,
+    ContentBox,
+}
+
 /// Flex container main axis direction.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum FlexDirection {
@@ -218,6 +226,7 @@ pub struct ComputedStyle {
     // Layout Display & Box Model
     pub display: Display,
     pub position: Position,
+    pub box_sizing: BoxSizing,
     pub width: Dimension,
     pub height: Dimension,
     pub min_width: Dimension,
@@ -274,6 +283,7 @@ impl Default for ComputedStyle {
         Self {
             display: Display::Block,
             position: Position::Static,
+            box_sizing: BoxSizing::BorderBox,
             width: Dimension::Auto,
             height: Dimension::Auto,
             min_width: Dimension::Auto,

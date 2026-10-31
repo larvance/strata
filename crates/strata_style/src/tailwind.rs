@@ -98,6 +98,14 @@ impl TailwindEngine {
                 style.flex_direction = FlexDirection::ColumnReverse;
                 return;
             }
+            "box-border" => {
+                style.box_sizing = BoxSizing::BorderBox;
+                return;
+            }
+            "box-content" => {
+                style.box_sizing = BoxSizing::ContentBox;
+                return;
+            }
             "flex-wrap" => {
                 style.flex_wrap = FlexWrap::Wrap;
                 return;

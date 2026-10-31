@@ -74,6 +74,7 @@ version = "0.1.0"
 name = "strata_layout"
 version = "0.1.0"
 dependencies = [
+ "strata_primitives",
  "strata_style",
 ]
 
