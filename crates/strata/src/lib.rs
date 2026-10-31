@@ -15,6 +15,8 @@ pub use strata_primitives as primitives;
 pub use strata_vfs as fs;
 pub use strata_storage as storage;
 pub use strata_web_api as web_api;
+pub use strata_parallel as parallel;
+pub use strata_tui as tui;
 
 pub mod prelude {
     pub use strata_dom;
@@ -46,6 +48,8 @@ pub mod prelude {
     pub use strata_vfs::prelude::*;
     pub use strata_storage::prelude::*;
     pub use strata_web_api::prelude::*;
+    pub use strata_parallel::prelude::*;
+    pub use strata_tui::prelude::*;
 }
 
 /// Runs a Strata application with the specified root component and configuration.

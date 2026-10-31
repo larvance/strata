@@ -34,6 +34,15 @@ pub fn set_test_override(root: VfsRoot, dir: PathBuf) {
     }
 }
 
+/// Clears a specific active test override.
+pub fn clear_test_override(root: VfsRoot) {
+    if let Ok(mut lock) = TEST_OVERRIDES.write() {
+        if let Some(ref mut map) = *lock {
+            map.remove(&root);
+        }
+    }
+}
+
 /// Clears any active test overrides.
 pub fn clear_test_overrides() {
     if let Ok(mut lock) = TEST_OVERRIDES.write() {

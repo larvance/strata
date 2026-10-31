@@ -32,11 +32,13 @@ dependencies = [
  "strata_js",
  "strata_layout",
  "strata_macro",
+ "strata_parallel",
  "strata_platform",
  "strata_primitives",
  "strata_render",
  "strata_storage",
  "strata_style",
+ "strata_tui",
  "strata_ui",
  "strata_vfs",
  "strata_web_api",
@@ -91,6 +93,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "strata_parallel"
+version = "0.1.0"
+dependencies = [
+ "strata_dom",
+ "strata_layout",
+ "strata_primitives",
+ "strata_render",
+ "strata_style",
+]
+
+[[package]]
 name = "strata_platform"
 version = "0.1.0"
 dependencies = [
@@ -125,6 +138,16 @@ name = "strata_style"
 version = "0.1.0"
 dependencies = [
  "strata_primitives",
+]
+
+[[package]]
+name = "strata_tui"
+version = "0.1.0"
+dependencies = [
+ "strata_dom",
+ "strata_layout",
+ "strata_primitives",
+ "strata_style",
 ]
 
 [[package]]

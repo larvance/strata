@@ -3,6 +3,8 @@
 use strata_vfs::prelude::*;
 use strata_vfs::{clear_test_overrides, set_test_override};
 
+static TEST_LOCK: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
 #[test]
 fn test_vfs_path_normalization_and_traversal_prevention() {
     let base = app_data();
@@ -28,7 +30,9 @@ fn test_vfs_path_normalization_and_traversal_prevention() {
 
 #[test]
 fn test_vfs_read_write_file_operations() {
+    let _guard = TEST_LOCK.lock().unwrap();
     let test_dir = std::env::temp_dir().join("strata_vfs_test_rw");
+    let _ = std::fs::remove_dir_all(&test_dir);
     set_test_override(VfsRoot::AppData, test_dir.clone());
 
     let file_path = app_data().join("config/app_settings.json");
@@ -67,7 +71,9 @@ fn test_vfs_read_write_file_operations() {
 
 #[test]
 fn test_vfs_read_dir_and_nested_directories() {
+    let _guard = TEST_LOCK.lock().unwrap();
     let test_dir = std::env::temp_dir().join("strata_vfs_test_dirs");
+    let _ = std::fs::remove_dir_all(&test_dir);
     set_test_override(VfsRoot::Cache, test_dir.clone());
 
     let f1 = cache().join("assets/fonts/inter.ttf");

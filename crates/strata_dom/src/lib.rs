@@ -15,9 +15,14 @@ impl View {
 }
 
 pub mod events;
+pub mod ir;
 pub mod reactive;
 
 pub use events::{Event, EventDispatcher, EventPhase, EventType};
+pub use ir::{
+    DisplayChunkRange, FixedRect, IrNodeFlags, IrTag, MemoCache, MemoEntry, NodeId, StackGuard,
+    UiIrGraph, UiIrNode,
+};
 pub use reactive::{
     batch, untrack, use_effect, use_memo, use_signal, use_state, Effect, Memo, ReactiveRuntime,
     ScopeId, Signal, SignalId, SubscriberId,
