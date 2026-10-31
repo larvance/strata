@@ -5,15 +5,21 @@
 
 pub mod csd;
 pub mod events;
+pub mod raw_abi;
+pub mod surface;
 pub mod tray;
 pub mod window;
 
 pub use csd::{ControlPlacement, CsdGeometry, CsdHitZone};
 pub use events::{KeyCode, Modifiers, MouseButton, PlatformEvent, TouchPhase};
+pub use surface::{
+    FramePacer, PresentError, PresentMode, RefreshRate, SoftwareSurfacePresenter, SurfaceConfig,
+    SurfaceHandle, SurfacePresenter, SwapchainCompositor, SwapchainFormat,
+};
 pub use tray::{TrayIcon, TrayMenu, TrayMenuItem};
 pub use window::{
-    CursorIcon, EventLoop, EventLoopControl, MockEventLoop, MockPlatformWindow, PlatformWindow,
-    ThemeMode, WindowConfig, WindowDecoration, WindowMode,
+    CursorIcon, EventLoop, EventLoopControl, LivePlatformWindow, MockEventLoop, MockPlatformWindow,
+    PlatformWindow, ThemeMode, WindowConfig, WindowDecoration, WindowMode,
 };
 
 /// Target operating system or runtime platform.
@@ -77,9 +83,10 @@ pub mod prelude {
     pub use super::csd::{ControlPlacement, CsdGeometry, CsdHitZone};
     pub use super::events::{KeyCode, Modifiers, MouseButton, PlatformEvent, TouchPhase};
     pub use super::tray::{TrayIcon, TrayMenu, TrayMenuItem};
+    pub use super::surface::{FramePacer, PresentMode, RefreshRate, SurfaceConfig, SurfaceHandle, SwapchainFormat};
     pub use super::window::{
-        CursorIcon, EventLoop, EventLoopControl, MockEventLoop, MockPlatformWindow, PlatformWindow,
-        ThemeMode, WindowConfig, WindowDecoration, WindowMode,
+        CursorIcon, EventLoop, EventLoopControl, LivePlatformWindow, MockEventLoop, MockPlatformWindow,
+        PlatformWindow, ThemeMode, WindowConfig, WindowDecoration, WindowMode,
     };
     pub use super::PlatformTarget;
 }

@@ -6,6 +6,7 @@ pub mod compositor;
 pub mod rasterizer;
 pub mod rasterizer3d;
 pub mod scene3d;
+pub mod swapchain;
 
 // Re-exports
 pub use compositor::{Compositor, DamageTracker, DisplayList, DrawCommand};
@@ -15,6 +16,9 @@ pub use geometry3d::{
 pub use math3d::{Mat4, Ray3D, Vec3, Vec4};
 pub use rasterizer::{sd_rounded_rect, sdf_coverage, FrameBuffer};
 pub use scene3d::{Camera3D, Geometry3D, Light3D, Material3D, Mesh3D, Scene3D, Transform3D};
+pub use swapchain::{
+    PresentError, SoftwareSurfacePresenter, SurfacePresenter, SwapchainCompositor, SwapchainFormat,
+};
 
 pub mod prelude {
     pub use crate::compositor::{Compositor, DamageTracker, DisplayList, DrawCommand};
@@ -24,4 +28,7 @@ pub mod prelude {
     pub use crate::math3d::{Mat4, Ray3D, Vec3, Vec4};
     pub use crate::rasterizer::FrameBuffer;
     pub use crate::scene3d::*;
+    pub use crate::swapchain::{
+        PresentError, SoftwareSurfacePresenter, SurfacePresenter, SwapchainCompositor, SwapchainFormat,
+    };
 }

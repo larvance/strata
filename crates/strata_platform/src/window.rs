@@ -1,7 +1,9 @@
 //! Window configuration, platform window traits, and mock implementations.
 
 use std::collections::VecDeque;
+use std::time::Instant;
 use crate::events::PlatformEvent;
+use crate::surface::{FramePacer, RefreshRate, SurfaceConfig, SurfaceHandle};
 
 /// Operating mode of the platform window.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -227,12 +229,153 @@ impl PlatformWindow for MockPlatformWindow {
     }
 }
 
+/// Live interactive platform window with surface configuration, frame pacing, and event queuing.
+#[derive(Debug, Clone)]
+pub struct LivePlatformWindow {
+    pub config: WindowConfig,
+    pub surface_config: SurfaceConfig,
+    pub surface_handle: SurfaceHandle,
+    pub frame_pacer: FramePacer,
+    pub scale_factor: f32,
+    pub is_focused: bool,
+    pub cursor: CursorIcon,
+    pub redraw_requested: bool,
+    pub event_queue: VecDeque<PlatformEvent>,
+}
+
+impl LivePlatformWindow {
+    /// Creates a live platform window initialized with the given configuration.
+    pub fn new(config: WindowConfig) -> Self {
+        let scale_factor = 1.0;
+        let surface_config = SurfaceConfig {
+            width: config.width,
+            height: config.height,
+            scale_factor,
+            ..Default::default()
+        };
+        let surface_handle = SurfaceHandle::new_headless(config.width, config.height, scale_factor);
+        let frame_pacer = FramePacer::new(RefreshRate::Hz60);
+        Self {
+            config,
+            surface_config,
+            surface_handle,
+            frame_pacer,
+            scale_factor,
+            is_focused: true,
+            cursor: CursorIcon::Default,
+            redraw_requested: true,
+            event_queue: VecDeque::new(),
+        }
+    }
+
+    /// Access surface configuration descriptor.
+    pub fn surface_config(&self) -> &SurfaceConfig {
+        &self.surface_config
+    }
+
+    /// Mutable access to frame pacer.
+    pub fn frame_pacer_mut(&mut self) -> &mut FramePacer {
+        &mut self.frame_pacer
+    }
+
+    /// Returns abstract surface handle.
+    pub fn surface_handle(&self) -> SurfaceHandle {
+        self.surface_handle
+    }
+
+    /// Consumes and clears redraw request flag.
+    pub fn take_redraw_request(&mut self) -> bool {
+        let requested = self.redraw_requested;
+        self.redraw_requested = false;
+        requested
+    }
+}
+
+impl PlatformWindow for LivePlatformWindow {
+    fn title(&self) -> &str {
+        &self.config.title
+    }
+
+    fn set_title(&mut self, title: &str) {
+        self.config.title = title.to_string();
+    }
+
+    fn size(&self) -> (u32, u32) {
+        (self.config.width, self.config.height)
+    }
+
+    fn set_size(&mut self, width: u32, height: u32) {
+        self.config.width = width;
+        self.config.height = height;
+        self.surface_config.width = width;
+        self.surface_config.height = height;
+        self.surface_handle.width = width;
+        self.surface_handle.height = height;
+        self.request_redraw();
+        self.push_event(PlatformEvent::WindowResized { width, height });
+    }
+
+    fn scale_factor(&self) -> f32 {
+        self.scale_factor
+    }
+
+    fn set_scale_factor(&mut self, scale_factor: f32) {
+        self.scale_factor = scale_factor;
+        self.surface_config.scale_factor = scale_factor;
+        self.surface_handle.scale_factor_snapped = (scale_factor * 64.0) as u32;
+        self.request_redraw();
+        self.push_event(PlatformEvent::ScaleFactorChanged { scale_factor });
+    }
+
+    fn mode(&self) -> WindowMode {
+        self.config.mode
+    }
+
+    fn set_mode(&mut self, mode: WindowMode) {
+        self.config.mode = mode;
+    }
+
+    fn is_focused(&self) -> bool {
+        self.is_focused
+    }
+
+    fn set_focused(&mut self, focused: bool) {
+        self.is_focused = focused;
+        self.push_event(PlatformEvent::WindowFocused(focused));
+    }
+
+    fn cursor(&self) -> CursorIcon {
+        self.cursor
+    }
+
+    fn set_cursor(&mut self, cursor: CursorIcon) {
+        self.cursor = cursor;
+    }
+
+    fn request_redraw(&mut self) {
+        self.redraw_requested = true;
+    }
+
+    fn is_redraw_requested(&self) -> bool {
+        self.redraw_requested
+    }
+
+    fn poll_events(&mut self) -> Vec<PlatformEvent> {
+        self.event_queue.drain(..).collect()
+    }
+
+    fn push_event(&mut self, event: PlatformEvent) {
+        self.event_queue.push_back(event);
+    }
+}
+
 /// Control flow returned by event loop handlers.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum EventLoopControl {
     #[default]
     Poll,
     Wait,
+    WaitUntil(Instant),
     Exit,
 }
 

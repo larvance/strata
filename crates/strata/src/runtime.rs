@@ -2,7 +2,12 @@
 
 use strata_dom::{NodeBlueprint, Tag, View};
 use strata_layout::prelude::*;
+use strata_platform::{
+    EventLoop, EventLoopControl, LivePlatformWindow, PlatformEvent, PlatformWindow,
+    SoftwareSurfacePresenter, SwapchainCompositor, SwapchainFormat, WindowConfig,
+};
 use strata_render::compositor::{DisplayList, DrawCommand};
+use strata_render::swapchain::{PresentError, SurfacePresenter};
 use strata_style::types::{Color, ComputedStyle, Dimension, Display, FlexDirection};
 
 /// Live running application instance holding active state, layout tree, and display list.
@@ -163,6 +168,80 @@ impl AppRuntime {
             Self::emit_display_commands(child, dl);
         }
     }
+
+    /// Processes an incoming platform event, updating viewport/scale or dispatching synthetic events.
+    /// Returns true if a dirty layout or presentation redraw was triggered.
+    pub fn step_event(&mut self, event: &PlatformEvent) -> bool {
+        match event {
+            PlatformEvent::WindowResized { width, height } => {
+                self.viewport_width = *width as f32;
+                self.viewport_height = *height as f32;
+                self.tick_frame();
+                true
+            }
+            PlatformEvent::ScaleFactorChanged { scale_factor } => {
+                self.dpr = *scale_factor;
+                self.tick_frame();
+                true
+            }
+            PlatformEvent::WindowFocused(_) => false,
+            PlatformEvent::WindowCloseRequested => false,
+            _ => false,
+        }
+    }
+
+    /// Renders the current frame and presents it to the given surface presenter via the swapchain compositor.
+    pub fn render_frame<P: SurfacePresenter>(
+        &mut self,
+        compositor: &mut SwapchainCompositor,
+        presenter: &mut P,
+        force_redraw: bool,
+    ) -> Result<bool, PresentError> {
+        self.tick_frame();
+        compositor.render_and_present(&self.display_list, presenter, force_redraw)
+    }
+
+    /// Runs the reactive event loop against a live platform window and surface presenter.
+    pub fn run_with_window<W, E, P>(
+        &mut self,
+        window: &mut W,
+        event_loop: &mut E,
+        compositor: &mut SwapchainCompositor,
+        presenter: &mut P,
+    ) where
+        W: PlatformWindow,
+        E: EventLoop,
+        P: SurfacePresenter,
+    {
+        // Initial frame presentation
+        let _ = self.render_frame(compositor, presenter, true);
+
+        event_loop.run(|event, control| {
+            match event {
+                PlatformEvent::WindowResized { width, height } => {
+                    compositor.resize(width, height, self.dpr);
+                    let _ = presenter.resize(width, height);
+                }
+                PlatformEvent::ScaleFactorChanged { scale_factor } => {
+                    compositor.resize(self.viewport_width as u32, self.viewport_height as u32, scale_factor);
+                }
+                PlatformEvent::WindowCloseRequested => {
+                    *control = EventLoopControl::Exit;
+                    return;
+                }
+                _ => {}
+            }
+
+            let needs_redraw = self.step_event(&event);
+
+            if needs_redraw || window.is_redraw_requested() {
+                let _ = self.render_frame(compositor, presenter, false);
+            }
+
+            // Power-saving sleep mode: if no events pending, wait for next input
+            *control = EventLoopControl::Wait;
+        });
+    }
 }
 
 /// Launches a live Strata application with the specified root component.
@@ -188,4 +267,31 @@ where
 {
     let view = root();
     AppRuntime::new(view, width, height, 1.0)
+}
+
+/// Launches a live interactive Strata window with surface presentation and frame pacing.
+pub fn launch_window<F>(root: F, config: WindowConfig) -> (AppRuntime, LivePlatformWindow, SoftwareSurfacePresenter)
+where
+    F: FnOnce() -> View + 'static,
+{
+    println!("⚡ Launching Strata Live Native Window: \"{}\"...", config.title);
+    let view = root();
+    let width = config.width as f32;
+    let height = config.height as f32;
+    let mut runtime = AppRuntime::new(view, width, height, 1.0);
+
+    let window = LivePlatformWindow::new(config.clone());
+    let mut presenter = SoftwareSurfacePresenter::new(config.width, config.height, SwapchainFormat::Bgra8Unorm);
+    let mut compositor = SwapchainCompositor::new(config.width, config.height, 1.0);
+
+    let _ = runtime.render_frame(&mut compositor, &mut presenter, true);
+
+    println!(
+        "✔ Strata Live Window active: {}x{} physical pixels, {} commands presented.",
+        presenter.width,
+        presenter.height,
+        runtime.display_list.commands.len()
+    );
+
+    (runtime, window, presenter)
 }
