@@ -2,6 +2,7 @@
 
 use strata::prelude::*;
 use crate::components::*;
+use crate::components::Sidebar;
 use crate::state::DashboardState;
 
 #[component]

@@ -7,5 +7,6 @@ license.workspace = true
 description = "Built-in vector icon system with over 1,000+ icons and subpixel GPU rendering for Strata"
 
 [dependencies]
+strata_primitives = { path = "../strata_primitives" }
 strata_dom = { path = "../strata_dom" }
 strata_macro = { path = "../strata_macro" }

@@ -64,6 +64,7 @@ version = "0.1.0"
 dependencies = [
  "strata_dom",
  "strata_macro",
+ "strata_primitives",
 ]
 
 [[package]]
@@ -123,5 +124,6 @@ dependencies = [
  "strata_dom",
  "strata_icons",
  "strata_macro",
+ "strata_primitives",
  "strata_style",
 ]

@@ -40,6 +40,18 @@ impl<F: Fn() + 'static> EventHandlerMarker<()> for F {
     }
 }
 
+impl EventHandlerMarker<()> for Rc<dyn Fn()> {
+    fn call_handler(&self, _event: Event) {
+        (self)();
+    }
+}
+
+impl EventHandlerMarker<(Event,)> for Rc<dyn Fn(Event)> {
+    fn call_handler(&self, event: Event) {
+        (self)(event);
+    }
+}
+
 /// Trait abstracting input/change value handlers accepting `()` or `(String)`.
 pub trait ValueHandlerMarker<Args> {
     fn call_handler(&self, val: String);

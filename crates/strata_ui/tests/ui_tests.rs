@@ -1,0 +1,375 @@
+//! Comprehensive integration tests for strata_ui components and primitives.
+
+use strata_dom::{Attribute, NodeBlueprint, Signal, Tag};
+use strata_icons::prelude::IconName;
+use strata_primitives::{Point, Rect, Size};
+use strata_ui::prelude::*;
+
+#[test]
+fn test_headless_primitives() {
+    // FocusTrap
+    let mut trap = FocusTrap::new(4);
+    assert_eq!(trap.active_index, 0);
+    assert_eq!(trap.next(), 1);
+    assert_eq!(trap.next(), 2);
+    assert_eq!(trap.next(), 3);
+    assert_eq!(trap.next(), 0); // Wraps around
+    assert_eq!(trap.prev(), 3); // Wraps backward
+
+    // RovingIndex
+    let mut roving = RovingIndex::new(3, Orientation::Horizontal);
+    assert_eq!(roving.handle_key("ArrowRight"), Some(1));
+    assert_eq!(roving.handle_key("ArrowRight"), Some(2));
+    assert_eq!(roving.handle_key("ArrowRight"), Some(0)); // Wraps
+    assert_eq!(roving.handle_key("ArrowLeft"), Some(2));
+    assert_eq!(roving.handle_key("Home"), Some(0));
+    assert_eq!(roving.handle_key("End"), Some(2));
+
+    // FloatingAnchor
+    let anchor = Rect::from_xywh(100.0, 100.0, 80.0, 40.0);
+    let floating_size = Size::new(120.0, 60.0);
+    let bottom_pos = FloatingAnchor::compute_position(anchor, floating_size, Placement::Bottom, 8.0);
+    assert_eq!(bottom_pos.y, 148.0); // 100 + 40 + 8
+    assert_eq!(bottom_pos.x, 80.0); // 100 + (80 - 120)/2 = 80
+
+    let flipped = FloatingAnchor::flip_if_overflow(
+        Point::new(950.0, 500.0),
+        Size::new(100.0, 50.0),
+        Size::new(1000.0, 800.0),
+    );
+    assert_eq!(flipped.x, 900.0); // Clamped so 900 + 100 <= 1000
+
+    // DismissableLayer
+    assert!(DismissableLayer::should_dismiss_on_escape("Escape"));
+    assert!(DismissableLayer::should_dismiss_on_escape("Esc"));
+    assert!(!DismissableLayer::should_dismiss_on_escape("Enter"));
+    assert!(DismissableLayer::should_dismiss_on_outside_click(
+        Point::new(10.0, 10.0),
+        Rect::from_xywh(50.0, 50.0, 100.0, 100.0),
+    ));
+}
+
+#[test]
+fn test_button_variants_and_loading() {
+    let btn_primary = Button(
+        Some(ButtonVariant::Primary),
+        Some(ButtonSize::Md),
+        None,
+        None,
+        Some("shadow-lg"),
+        None,
+        Some(IconName::Search),
+        None,
+        None,
+    );
+    match &btn_primary.root {
+        NodeBlueprint::Element { tag, classes, attributes, children } => {
+            assert_eq!(*tag, Tag::Button);
+            assert!(classes.iter().any(|c| c.contains("bg-indigo-600")));
+            assert!(classes.iter().any(|c| c.contains("shadow-lg")));
+            assert!(attributes.iter().any(|a| matches!(a, Attribute::Property { key, value } if key == "role" && value == "button")));
+            assert_eq!(children.len(), 1); // prefix icon
+        }
+        _ => panic!("Expected Element"),
+    }
+
+    let btn_loading = Button(
+        Some(ButtonVariant::Destructive),
+        None,
+        Some(true),
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+    );
+    match &btn_loading.root {
+        NodeBlueprint::Element { classes, attributes, .. } => {
+            assert!(classes.iter().any(|c| c.contains("bg-rose-600")));
+            assert!(attributes.iter().any(|a| matches!(a, Attribute::Property { key, value } if key == "aria-disabled" && value == "true")));
+        }
+        _ => panic!("Expected Element"),
+    }
+
+    let icon_btn = IconButton(
+        IconName::Settings,
+        Some(ButtonVariant::Ghost),
+        Some(ButtonSize::Sm),
+        Some(true),
+        Some("Settings"),
+        None,
+        None,
+        None,
+    );
+    match &icon_btn.root {
+        NodeBlueprint::Element { classes, attributes, .. } => {
+            assert!(classes.iter().any(|c| c.contains("rounded-full")));
+            assert!(attributes.iter().any(|a| matches!(a, Attribute::Property { key, value } if key == "title" && value == "Settings")));
+        }
+        _ => panic!("Expected Element"),
+    }
+}
+
+#[test]
+fn test_form_controls_and_signals() {
+    let text_sig = Signal::new(String::from("admin@strata.dev"));
+    let input_view = Input(
+        Some("Email"),
+        Some("Enter your email"),
+        Some(text_sig.clone()),
+        Some(IconName::Mail),
+        None,
+        Some("We respect your privacy"),
+        Some(false),
+        None,
+        None,
+        None,
+    );
+    match &input_view.root {
+        NodeBlueprint::Element { tag, children, .. } => {
+            assert_eq!(*tag, Tag::Div);
+            assert!(children.len() >= 2); // label + input wrapper + helper
+        }
+        _ => panic!("Expected Element"),
+    }
+
+    let pass_sig = Signal::new(String::from("secret123"));
+    let show_pass = Signal::new(false);
+    let pass_view = PasswordInput(
+        Some("Password"),
+        None,
+        Some(pass_sig),
+        Some(show_pass.clone()),
+        None,
+        None,
+    );
+    assert_eq!(show_pass.get(), false);
+    match &pass_view.root {
+        NodeBlueprint::Element { children, .. } => {
+            assert_eq!(children.len(), 2);
+        }
+        _ => panic!("Expected Element"),
+    }
+
+    let num_sig = Signal::new(42);
+    let num_view = NumberInput(
+        Some("Quantity"),
+        num_sig.clone(),
+        Some(0),
+        Some(100),
+        Some(5),
+        None,
+        None,
+    );
+    assert_eq!(num_sig.get(), 42);
+    match &num_view.root {
+        NodeBlueprint::Element { tag, .. } => assert_eq!(*tag, Tag::Div),
+        _ => panic!("Expected Element"),
+    }
+
+    let chk_sig = Signal::new(true);
+    let chk_view = Checkbox(
+        Some("Accept Terms"),
+        chk_sig.clone(),
+        None,
+        None,
+    );
+    assert_eq!(chk_sig.get(), true);
+    match &chk_view.root {
+        NodeBlueprint::Element { tag, .. } => assert_eq!(*tag, Tag::Label),
+        _ => panic!("Expected Element"),
+    }
+
+    let switch_sig = Signal::new(false);
+    let switch_view = Switch(
+        Some("Dark Mode"),
+        Some("Enable dark theme interface"),
+        switch_sig.clone(),
+        None,
+    );
+    assert_eq!(switch_sig.get(), false);
+    match &switch_view.root {
+        NodeBlueprint::Element { tag, .. } => assert_eq!(*tag, Tag::Div),
+        _ => panic!("Expected Element"),
+    }
+
+    let slider_sig = Signal::new(75.0);
+    let slider_view = Slider(0.0, 100.0, slider_sig, None, None);
+    match &slider_view.root {
+        NodeBlueprint::Element { tag, .. } => assert_eq!(*tag, Tag::Div),
+        _ => panic!("Expected Element"),
+    }
+}
+
+#[test]
+fn test_data_display_components() {
+    let card = Card(
+        Some(vec![
+            CardHeader(Some("Metrics Overview"), Some("Real-time telemetry"), None, None).root,
+            CardContent(Some(vec![
+                Stat("Cluster CPU", "84.2%", Some(12.5), Some("16 Cores"), None).root,
+            ]), None).root,
+            CardFooter(Some(vec![
+                Badge(Some(BadgeVariant::Success), None, None).root,
+            ]), None).root,
+        ]),
+        None,
+    );
+    match &card.root {
+        NodeBlueprint::Element { tag, children, .. } => {
+            assert_eq!(*tag, Tag::Div);
+            assert_eq!(children.len(), 3);
+        }
+        _ => panic!("Expected Element"),
+    }
+
+    let active_tab = Signal::new(1);
+    let tabs = Tabs(vec!["Overview", "Deployments", "Audit Logs"], active_tab.clone(), None);
+    assert_eq!(active_tab.get(), 1);
+    match &tabs.root {
+        NodeBlueprint::Element { tag, children, .. } => {
+            assert_eq!(*tag, Tag::Div);
+            assert_eq!(children.len(), 1); // 1 Fragment child with mapped tab buttons
+            match &children[0] {
+                NodeBlueprint::Fragment(btns) => assert_eq!(btns.len(), 3),
+                _ => panic!("Expected Fragment"),
+            }
+        }
+        _ => panic!("Expected Element"),
+    }
+
+    let accord_open = Signal::new(true);
+    let accordion = AccordionItem(
+        "How does Strata eliminate Chromium?",
+        accord_open.clone(),
+        None,
+        None,
+    );
+    assert_eq!(accord_open.get(), true);
+    match &accordion.root {
+        NodeBlueprint::Element { children, .. } => {
+            assert_eq!(children.len(), 2); // button + content
+        }
+        _ => panic!("Expected Element"),
+    }
+}
+
+#[test]
+fn test_feedback_and_toast_queue() {
+    Toast::clear();
+    assert_eq!(Toast::get_all().len(), 0);
+
+    let id1 = Toast::success("Deployment created successfully!");
+    let id2 = Toast::error("Connection lost to cluster");
+    assert_eq!(Toast::get_all().len(), 2);
+
+    let all = Toast::get_all();
+    assert_eq!(all[0].kind, ToastKind::Success);
+    assert_eq!(all[1].kind, ToastKind::Error);
+
+    Toast::dismiss(id1);
+    assert_eq!(Toast::get_all().len(), 1);
+    assert_eq!(Toast::get_all()[0].id, id2);
+
+    Toast::clear();
+    assert_eq!(Toast::get_all().len(), 0);
+
+    let modal_open = Signal::new(false);
+    let closed_modal = Modal(modal_open.clone(), "Confirm Action", None, None, None);
+    assert!(matches!(&closed_modal.root, NodeBlueprint::Fragment(children) if children.is_empty()));
+
+    modal_open.set(true);
+    let open_modal = Modal(modal_open, "Confirm Action", Some("Are you sure?"), None, None);
+    assert!(matches!(&open_modal.root, NodeBlueprint::Element { .. }));
+
+    let alert = Alert(
+        Some(AlertVariant::Warning),
+        "Memory Limit Exceeded",
+        Some("Node us-east-01 is nearing 90% capacity"),
+        None,
+        None,
+    );
+    match &alert.root {
+        NodeBlueprint::Element { classes, .. } => {
+            assert!(classes.iter().any(|c| c.contains("bg-amber-500/10")));
+        }
+        _ => panic!("Expected Element"),
+    }
+}
+
+#[test]
+fn test_navigation_and_composites() {
+    let sidebar_items = vec![
+        SidebarItemData {
+            label: "Dashboard",
+            icon: IconName::Activity,
+            href: Some("/dashboard"),
+            badge: None,
+            is_active: true,
+        },
+        SidebarItemData {
+            label: "Clusters",
+            icon: IconName::Server,
+            href: Some("/clusters"),
+            badge: Some("4"),
+            is_active: false,
+        },
+    ];
+    let sidebar = Sidebar(sidebar_items, None, None, None, None);
+    match &sidebar.root {
+        NodeBlueprint::Element { tag, .. } => assert_eq!(*tag, Tag::Aside),
+        _ => panic!("Expected Element"),
+    }
+
+    let breadcrumbs = vec![
+        BreadcrumbItemData { label: "Home", href: Some("/"), is_current: false },
+        BreadcrumbItemData { label: "Clusters", href: Some("/clusters"), is_current: false },
+        BreadcrumbItemData { label: "us-east-01", href: None, is_current: true },
+    ];
+    let bc = Breadcrumb(breadcrumbs, None);
+    match &bc.root {
+        NodeBlueprint::Element { tag, children, .. } => {
+            assert_eq!(*tag, Tag::Nav);
+            assert_eq!(children.len(), 1);
+            match &children[0] {
+                NodeBlueprint::Fragment(items) => assert_eq!(items.len(), 3),
+                _ => panic!("Expected Fragment"),
+            }
+        }
+        _ => panic!("Expected Element"),
+    }
+
+    let page_sig = Signal::new(1);
+    let pag = Pagination(10, page_sig.clone(), None);
+    match &pag.root {
+        NodeBlueprint::Element { children, .. } => {
+            assert_eq!(children.len(), 3); // prev + label + next
+        }
+        _ => panic!("Expected Element"),
+    }
+
+    // DataTable test
+    struct ServerNode {
+        name: &'static str,
+        cores: u32,
+        status: &'static str,
+    }
+
+    let nodes = vec![
+        ServerNode { name: "edge-01", cores: 32, status: "healthy" },
+        ServerNode { name: "edge-02", cores: 64, status: "degraded" },
+    ];
+
+    let columns = vec![
+        TableColumnDef::new("name", "Node Name", |n: &ServerNode| n.name.to_string()),
+        TableColumnDef::new("cores", "CPU Cores", |n: &ServerNode| n.cores.to_string()),
+        TableColumnDef::new("status", "Health Status", |n: &ServerNode| n.status.to_string()),
+    ];
+
+    let dt = DataTable(columns, &nodes, None);
+    match &dt.root {
+        NodeBlueprint::Element { tag, .. } => assert_eq!(*tag, Tag::Div),
+        _ => panic!("Expected Element"),
+    }
+}
