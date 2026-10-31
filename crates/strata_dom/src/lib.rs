@@ -1,6 +1,5 @@
 //! Strata DOM: Fine-grained reactive signal graph, DOM representations, and node blueprints.
 
-use std::cell::RefCell;
 use std::rc::Rc;
 
 /// Represents an opaque handle to a rendered UI subtree.
@@ -15,36 +14,14 @@ impl View {
     }
 }
 
-/// Standard synthetic event types.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
-pub enum EventType {
-    Click,
-    Input,
-    Change,
-    Submit,
-    KeyDown,
-    KeyUp,
-    PointerDown,
-    PointerUp,
-    PointerMove,
-    Focus,
-    Blur,
-    Custom(&'static str),
-}
+pub mod events;
+pub mod reactive;
 
-/// Synthetic DOM Event passed to event handlers.
-#[derive(Clone, Debug, Default)]
-pub struct Event {
-    pub target_id: Option<u32>,
-    pub value: String,
-}
-
-impl std::ops::Deref for Event {
-    type Target = str;
-    fn deref(&self) -> &Self::Target {
-        &self.value
-    }
-}
+pub use events::{Event, EventDispatcher, EventPhase, EventType};
+pub use reactive::{
+    batch, untrack, use_effect, use_memo, use_signal, use_state, Effect, Memo, ReactiveRuntime,
+    ScopeId, Signal, SignalId, SubscriberId,
+};
 
 /// Trait abstracting event handlers accepting `()` or `(Event)`.
 pub trait EventHandlerMarker<Args> {
@@ -377,48 +354,3 @@ impl IntoNodeBlueprint for Rc<dyn Fn() -> String> {
     }
 }
 
-/// Fine-grained reactive state container.
-#[derive(Clone)]
-pub struct Signal<T> {
-    value: Rc<RefCell<T>>,
-}
-
-impl<T: Clone + 'static> Signal<T> {
-    pub fn new(initial: T) -> Self {
-        Self {
-            value: Rc::new(RefCell::new(initial)),
-        }
-    }
-
-    pub fn get(&self) -> T {
-        self.value.borrow().clone()
-    }
-
-    pub fn set(&self, new_val: T) {
-        *self.value.borrow_mut() = new_val;
-    }
-
-    pub fn update<R>(&self, f: impl FnOnce(&mut T) -> R) -> R {
-        f(&mut *self.value.borrow_mut())
-    }
-}
-
-pub fn use_signal<T: Clone + 'static>(initial: T) -> Signal<T> {
-    Signal::new(initial)
-}
-
-pub fn use_state<T: Clone + 'static>(init: impl FnOnce() -> T) -> (Signal<T>, Signal<T>) {
-    let s = Signal::new(init());
-    (s.clone(), s)
-}
-
-pub fn use_memo<T: Clone + 'static>(f: impl Fn() -> T + 'static) -> Signal<T> {
-    Signal::new(f())
-}
-
-pub fn use_effect<F>(_f: F)
-where
-    F: Fn() -> Option<Box<dyn FnOnce()>> + 'static,
-{
-    // Reactive effect subscriber hook
-}
