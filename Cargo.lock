@@ -35,6 +35,7 @@ dependencies = [
  "strata_js",
  "strata_layout",
  "strata_macro",
+ "strata_mobile_test",
  "strata_parallel",
  "strata_platform",
  "strata_primitives",
@@ -54,6 +55,7 @@ dependencies = [
  "strata",
  "strata_codegen_js",
  "strata_dom",
+ "strata_mobile_test",
 ]
 
 [[package]]
@@ -114,6 +116,15 @@ version = "0.1.0"
 dependencies = [
  "strata_dom",
  "strata_js",
+]
+
+[[package]]
+name = "strata_mobile_test"
+version = "0.1.0"
+dependencies = [
+ "strata_device",
+ "strata_platform",
+ "strata_primitives",
 ]
 
 [[package]]

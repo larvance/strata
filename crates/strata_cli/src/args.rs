@@ -178,6 +178,9 @@ pub enum CliCommand {
     Test {
         parity: bool,
         verbose: bool,
+        android: bool,
+        ios: bool,
+        mock_ios: bool,
     },
     Help,
     Version,
@@ -382,6 +385,9 @@ impl CliArgs {
     fn parse_test(args: &[String]) -> Result<CliCommand, String> {
         let mut parity = false;
         let mut verbose = false;
+        let mut android = false;
+        let mut ios = false;
+        let mut mock_ios = false;
 
         let mut i = 0;
         while i < args.len() {
@@ -393,10 +399,22 @@ impl CliArgs {
                 }
             } else if arg == "--verbose" || arg == "-v" {
                 verbose = true;
+            } else if arg == "--android" {
+                android = true;
+            } else if arg == "--ios" {
+                ios = true;
+            } else if arg == "--mock-ios" {
+                mock_ios = true;
             }
             i += 1;
         }
 
-        Ok(CliCommand::Test { parity, verbose })
+        Ok(CliCommand::Test {
+            parity,
+            verbose,
+            android,
+            ios,
+            mock_ios,
+        })
     }
 }

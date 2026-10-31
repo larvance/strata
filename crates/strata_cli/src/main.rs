@@ -100,9 +100,42 @@ fn main() {
                 }
             }
         }
-        CliCommand::Test { parity, verbose } => {
+        CliCommand::Test {
+            parity,
+            verbose,
+            android,
+            ios,
+            mock_ios,
+        } => {
             CliArgs::print_banner();
-            if parity {
+            if android || ios || mock_ios {
+                println!("⚡ Running Strata Mobile Virtualization Test Suite...");
+                let config = strata_mobile_test::StrataMobileTestConfig {
+                    is_android: android || (!ios && !mock_ios),
+                    is_ios: ios,
+                    is_mock_ios: mock_ios,
+                    device_serial: None,
+                    enable_monkey_fuzz: true,
+                    fuzz_event_count: 50,
+                    test_foldable: true,
+                };
+                let mut runner = strata_mobile_test::StrataMobileTestRunner::new(config);
+                let report = runner.execute();
+                for detail in &report.details {
+                    println!("   -> {}", detail);
+                }
+                if report.passed {
+                    println!(
+                        "✔ Mobile test suite passed: {}/{} tests successful (SSIM: {:.4})",
+                        report.tests_run.saturating_sub(report.tests_failed),
+                        report.tests_run,
+                        report.ssim_score
+                    );
+                } else {
+                    eprintln!("✖ Mobile test suite failed: {}/{} failed", report.tests_failed, report.tests_run);
+                    process::exit(1);
+                }
+            } else if parity {
                 println!("⚡ Running Chromium-parity visual and layout regression test suite...");
                 let report = ParityHarness::run_suite(verbose);
                 println!(

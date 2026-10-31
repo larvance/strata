@@ -20,6 +20,7 @@ pub use strata_parallel as parallel;
 pub use strata_tui as tui;
 pub use strata_codegen_js as codegen_js;
 pub use strata_devtools as devtools;
+pub use strata_mobile_test as mobile_test;
 
 pub mod prelude {
     pub use strata_dom;
@@ -56,6 +57,7 @@ pub mod prelude {
     pub use strata_tui::prelude::*;
     pub use strata_codegen_js::prelude::*;
     pub use strata_devtools::*;
+    pub use strata_mobile_test::*;
 }
 
 /// Runs a Strata application with the specified root component and configuration.

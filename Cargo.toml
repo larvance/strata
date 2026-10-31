@@ -21,6 +21,7 @@ members = [
     "crates/strata_web_api",
     "crates/strata_parallel",
     "crates/strata_tui",
+    "crates/strata_mobile_test",
     "examples/saas_dashboard",
     "examples/ecommerce_storefront",
     "examples/creative_studio",

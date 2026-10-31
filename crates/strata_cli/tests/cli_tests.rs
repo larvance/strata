@@ -54,6 +54,21 @@ fn test_cli_args_parsing_commands() {
         CliCommand::Test {
             parity: true,
             verbose: false,
+            android: false,
+            ios: false,
+            mock_ios: false,
+        }
+    );
+
+    let cmd_android = CliArgs::parse_from(&["strata", "test", "--android"]).unwrap();
+    assert_eq!(
+        cmd_android,
+        CliCommand::Test {
+            parity: false,
+            verbose: false,
+            android: true,
+            ios: false,
+            mock_ios: false,
         }
     );
 
