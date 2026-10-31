@@ -29,6 +29,7 @@ version = "0.1.0"
 dependencies = [
  "strata_codegen_js",
  "strata_device",
+ "strata_devtools",
  "strata_dom",
  "strata_icons",
  "strata_js",
@@ -70,6 +71,16 @@ version = "0.1.0"
 dependencies = [
  "strata_dom",
  "strata_primitives",
+]
+
+[[package]]
+name = "strata_devtools"
+version = "0.1.0"
+dependencies = [
+ "strata_dom",
+ "strata_platform",
+ "strata_primitives",
+ "strata_style",
 ]
 
 [[package]]
