@@ -1,0 +1,32 @@
+# Strata Repository Gitignore
+
+# Core internal planning, tracking, and deep architecture analysis (Gitignored per project design)
+info/
+references/
+
+# Rust Cargo build artifacts
+/target/
+**/*.rs.bk
+
+# Distribution and compiled bundles
+dist/
+build/
+pkg/
+
+# Platform native intermediate artifacts
+*.apk
+*.aab
+*.ipa
+*.app/
+*.dSYM/
+
+# IDE / Editor artifacts
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS specific files
+Thumbs.db
