@@ -17,3 +17,6 @@ strata_platform = { path = "../strata_platform" }
 strata_icons = { path = "../strata_icons" }
 strata_ui = { path = "../strata_ui" }
 strata_primitives = { path = "../strata_primitives" }
+strata_vfs = { path = "../strata_vfs" }
+strata_storage = { path = "../strata_storage" }
+strata_web_api = { path = "../strata_web_api" }

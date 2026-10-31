@@ -1,0 +1,9 @@
+[package]
+name = "strata_vfs"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Universal, sandboxed asynchronous Virtual File System with zero #[cfg] in user code for Strata"
+
+[dependencies]

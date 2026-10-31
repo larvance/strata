@@ -12,6 +12,9 @@ pub use strata_render as render;
 pub use strata_style as style;
 pub use strata_ui as ui;
 pub use strata_primitives as primitives;
+pub use strata_vfs as fs;
+pub use strata_storage as storage;
+pub use strata_web_api as web_api;
 
 pub mod prelude {
     pub use strata_dom;
@@ -20,7 +23,15 @@ pub mod prelude {
         use_effect, use_memo, use_signal, use_state, Attribute, Event, EventType, IntoNodeBlueprint,
         NodeBlueprint, Signal, Tag, View,
     };
-    pub use strata_js::prelude::*;
+    pub use strata_js::{
+        json::{parse_json, stringify_json},
+        promise::{drain_microtasks, pending_microtasks_count, queue_microtask, JsPromise, PromiseState},
+        web::{
+            advance_timers_by, clear_interval, clear_timeout, local_storage, session_storage,
+            set_interval, set_timeout, tick_timers, Storage, TimerId, URLSearchParams,
+        },
+        JsObject, JsValue,
+    };
     pub use strata_macro::{component, dynamic, rsx};
     pub use strata_platform::WindowConfig;
     pub use strata_render::scene3d::{
@@ -32,6 +43,9 @@ pub mod prelude {
     pub use strata_icons::Icons;
     pub use strata_ui::prelude::*;
     pub use strata_primitives::prelude::*;
+    pub use strata_vfs::prelude::*;
+    pub use strata_storage::prelude::*;
+    pub use strata_web_api::prelude::*;
 }
 
 /// Runs a Strata application with the specified root component and configuration.

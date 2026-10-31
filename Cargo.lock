@@ -35,8 +35,11 @@ dependencies = [
  "strata_platform",
  "strata_primitives",
  "strata_render",
+ "strata_storage",
  "strata_style",
  "strata_ui",
+ "strata_vfs",
+ "strata_web_api",
 ]
 
 [[package]]
@@ -111,6 +114,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "strata_storage"
+version = "0.1.0"
+dependencies = [
+ "strata_vfs",
+]
+
+[[package]]
 name = "strata_style"
 version = "0.1.0"
 dependencies = [
@@ -127,3 +137,11 @@ dependencies = [
  "strata_primitives",
  "strata_style",
 ]
+
+[[package]]
+name = "strata_vfs"
+version = "0.1.0"
+
+[[package]]
+name = "strata_web_api"
+version = "0.1.0"
