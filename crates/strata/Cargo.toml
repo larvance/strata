@@ -26,3 +26,5 @@ strata_tui = { path = "../strata_tui" }
 strata_codegen_js = { path = "../strata_codegen_js" }
 strata_devtools = { path = "../strata_devtools" }
 strata_mobile_test = { path = "../strata_mobile_test" }
+strata_sim = { path = "../strata_sim" }
+

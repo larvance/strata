@@ -182,6 +182,9 @@ pub enum CliCommand {
         ios: bool,
         mock_ios: bool,
     },
+    Sim {
+        device: Option<String>,
+    },
     Help,
     Version,
 }
@@ -204,6 +207,7 @@ impl CliArgs {
         println!("  build [--target <target>]       Compile optimized binary (desktop, android, ios, macos, windows, linux, web-wasm, web-js)");
         println!("  package [--format <fmt>]        Package into native installer (apk, aab, ipa, dmg, msi, appimage, tar.gz)");
         println!("  test [--parity chromium]        Run automated Chromium pixel-parity visual diff suite");
+        println!("  sim [--device <name>]           Launch native mobile simulator (iphone-16-pro, s24-ultra, pixel-9, z-fold-6, z-flip-6, duo-2)");
         println!("  help                            Print this help message");
         println!("  version                         Print version information\n");
         println!("Targets:");
@@ -233,6 +237,7 @@ impl CliArgs {
             "build" => Self::parse_build(sub_args),
             "package" => Self::parse_package(sub_args),
             "test" => Self::parse_test(sub_args),
+            "sim" | "simulator" => Self::parse_sim(sub_args),
             "help" | "--help" | "-h" => Ok(CliCommand::Help),
             "version" | "--version" | "-v" => Ok(CliCommand::Version),
             unknown => Err(format!(
@@ -417,4 +422,23 @@ impl CliArgs {
             mock_ios,
         })
     }
+
+    fn parse_sim(args: &[String]) -> Result<CliCommand, String> {
+        let mut device = None;
+        let mut i = 0;
+        while i < args.len() {
+            let arg = &args[i];
+            if arg == "--device" || arg == "-d" {
+                i += 1;
+                if i >= args.len() {
+                    return Err("Expected device preset name after '--device'".to_string());
+                }
+                device = Some(args[i].clone());
+            }
+            i += 1;
+        }
+
+        Ok(CliCommand::Sim { device })
+    }
 }
+

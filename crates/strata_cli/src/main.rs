@@ -143,6 +143,27 @@ fn main() {
                 println!("⚡ Running Strata tests...");
             }
         }
+        CliCommand::Sim { device } => {
+            CliArgs::print_banner();
+            let preset_name = device.as_deref().unwrap_or("iphone-16-pro");
+            let profile = match preset_name {
+                "iphone-16-pro" | "iphone" => strata_sim::DeviceProfile::iphone_16_pro_max(),
+                "s24-ultra" | "samsung" => strata_sim::DeviceProfile::galaxy_s24_ultra(),
+                "pixel-9" | "pixel" => strata_sim::DeviceProfile::pixel_9_pro(),
+                "z-fold-6" | "fold" => strata_sim::DeviceProfile::galaxy_z_fold_6(),
+                "z-flip-6" | "flip" => strata_sim::DeviceProfile::galaxy_z_flip_6(),
+                "duo-2" | "duo" => strata_sim::DeviceProfile::surface_duo_2(),
+                _ => {
+                    println!("ℹ Unknown preset '{}', defaulting to iPhone 16 Pro Max", preset_name);
+                    strata_sim::DeviceProfile::iphone_16_pro_max()
+                }
+            };
+            println!("⚡ Launching Strata Native Mobile Simulator [{}]...", profile.name);
+            let workspace = strata_sim::MobileSimulatorWorkspace::new(profile);
+            let view = workspace.render_view();
+            println!("✔ Mobile simulator running in pure Rust (Zero Chromium / Zero QEMU).");
+            strata::launch(move || view);
+        }
         CliCommand::Help => {
             CliArgs::print_help();
         }

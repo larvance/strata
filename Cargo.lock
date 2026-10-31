@@ -40,6 +40,7 @@ dependencies = [
  "strata_platform",
  "strata_primitives",
  "strata_render",
+ "strata_sim",
  "strata_storage",
  "strata_style",
  "strata_tui",
@@ -56,6 +57,7 @@ dependencies = [
  "strata_codegen_js",
  "strata_dom",
  "strata_mobile_test",
+ "strata_sim",
 ]
 
 [[package]]
@@ -159,6 +161,24 @@ dependencies = [
  "strata_macro",
  "strata_primitives",
  "strata_style",
+]
+
+[[package]]
+name = "strata_sim"
+version = "0.1.0"
+dependencies = [
+ "strata",
+ "strata_device",
+ "strata_dom",
+ "strata_icons",
+ "strata_layout",
+ "strata_macro",
+ "strata_platform",
+ "strata_primitives",
+ "strata_render",
+ "strata_style",
+ "strata_ui",
+ "strata_web_api",
 ]
 
 [[package]]

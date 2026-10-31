@@ -72,7 +72,16 @@ fn test_cli_args_parsing_commands() {
         }
     );
 
-    // 6. Help & Version
+    // 6. Sim command
+    let cmd_sim = CliArgs::parse_from(&["strata", "sim", "--device", "z-fold-6"]).unwrap();
+    assert_eq!(
+        cmd_sim,
+        CliCommand::Sim {
+            device: Some("z-fold-6".to_string()),
+        }
+    );
+
+    // 7. Help & Version
     assert_eq!(CliArgs::parse_from(&["strata", "help"]).unwrap(), CliCommand::Help);
     assert_eq!(CliArgs::parse_from(&["strata", "--version"]).unwrap(), CliCommand::Version);
 }

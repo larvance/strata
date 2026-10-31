@@ -21,6 +21,8 @@ pub use strata_tui as tui;
 pub use strata_codegen_js as codegen_js;
 pub use strata_devtools as devtools;
 pub use strata_mobile_test as mobile_test;
+pub use strata_sim as sim;
+
 
 pub mod runtime;
 pub mod benchmarks;
@@ -63,6 +65,13 @@ pub mod prelude {
     pub use strata_codegen_js::prelude::*;
     pub use strata_devtools::*;
     pub use strata_mobile_test::*;
+    pub use strata_sim as sim;
+    pub use strata_sim::{
+        AppMetadata, DeviceFormFactor, DeviceManufacturer, DeviceOrientation, DevicePosture,
+        DeviceProfile, DynamicAlertKind, DynamicIslandOscillator, DynamicIslandState,
+        FoldableState, GeometrySolver, MobileSimulatorWorkspace, MultiAppSandbox, NavAction,
+        ScreenProfile, ThreeButtonNavBar, VirtualHalBus,
+    };
     pub use crate::runtime::{AppRuntime, launch, launch_headless};
     pub use crate::benchmarks::{BenchmarkHarness, BenchmarkReport};
 }

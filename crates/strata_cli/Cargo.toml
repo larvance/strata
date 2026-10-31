@@ -18,3 +18,5 @@ strata = { path = "../strata" }
 strata_dom = { path = "../strata_dom" }
 strata_codegen_js = { path = "../strata_codegen_js" }
 strata_mobile_test = { path = "../strata_mobile_test" }
+strata_sim = { path = "../strata_sim" }
+
