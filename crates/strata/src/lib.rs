@@ -22,6 +22,11 @@ pub use strata_codegen_js as codegen_js;
 pub use strata_devtools as devtools;
 pub use strata_mobile_test as mobile_test;
 
+pub mod runtime;
+pub mod benchmarks;
+pub use runtime::{AppRuntime, launch, launch_headless};
+pub use benchmarks::{BenchmarkHarness, BenchmarkReport};
+
 pub mod prelude {
     pub use strata_dom;
     pub use strata_js;
@@ -58,12 +63,7 @@ pub mod prelude {
     pub use strata_codegen_js::prelude::*;
     pub use strata_devtools::*;
     pub use strata_mobile_test::*;
+    pub use crate::runtime::{AppRuntime, launch, launch_headless};
+    pub use crate::benchmarks::{BenchmarkHarness, BenchmarkReport};
 }
 
-/// Runs a Strata application with the specified root component and configuration.
-pub fn launch<F>(_root: F)
-where
-    F: FnOnce() -> dom::View + 'static,
-{
-    println!("⚡ Initializing Strata Universal Frontend Runtime...");
-}

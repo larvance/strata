@@ -397,3 +397,22 @@ fn test_subpixel_layout_snapping() {
     let reconstructed_y = unit_y / 64.0;
     assert_eq!(snapped.y, reconstructed_y);
 }
+
+#[test]
+fn test_wpt_suite_execution_and_compliance() {
+    let results = WptSuite::run_all();
+    assert_eq!(results.len(), 12);
+
+    for vector in &results {
+        assert!(
+            vector.passed,
+            "WPT Test vector '{}' ({}) failed with deviation: {:.4}px",
+            vector.id, vector.title, vector.deviation_px
+        );
+        assert!(vector.deviation_px <= 0.016);
+    }
+
+    let compliance = WptSuite::compliance_percentage();
+    assert_eq!(compliance, 100.0);
+}
+

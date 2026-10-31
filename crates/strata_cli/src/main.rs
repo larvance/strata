@@ -138,15 +138,7 @@ fn main() {
             } else if parity {
                 println!("⚡ Running Chromium-parity visual and layout regression test suite...");
                 let report = ParityHarness::run_suite(verbose);
-                println!(
-                    "✔ Specification Parity: {}/{} tests passed (Average delta: {:.2}%)",
-                    report.passed_cases,
-                    report.total_cases,
-                    report.average_pixel_delta * 100.0
-                );
-                if report.is_full_parity {
-                    println!("   Status: 100% Chromium/Blink Reference Match.");
-                }
+                report.print_scorecard();
             } else {
                 println!("⚡ Running Strata tests...");
             }
