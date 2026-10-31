@@ -9,3 +9,6 @@ description = "High-performance Display List, Stacking Context Compositor, and G
 [dependencies]
 strata_style = { path = "../strata_style" }
 strata_layout = { path = "../strata_layout" }
+strata_dom = { path = "../strata_dom" }
+strata_macro = { path = "../strata_macro" }
+strata_js = { path = "../strata_js" }

@@ -14,13 +14,18 @@ impl JsTranspiler {
 
     fn render_node(blueprint: &NodeBlueprint, out: &mut String) {
         match blueprint {
-            NodeBlueprint::Element { tag, classes, children } => {
+            NodeBlueprint::Element { tag, classes, attributes, children } => {
                 out.push_str(&format!(
                     "(() => {{ const el = document.createElement('{:?}'); ",
                     tag
                 ));
                 if !classes.is_empty() {
                     out.push_str(&format!("el.className = '{}'; ", classes.join(" ")));
+                }
+                for attr in attributes {
+                    if let strata_dom::Attribute::Property { key, value } = attr {
+                        out.push_str(&format!("el.setAttribute('{}', '{}'); ", key, value));
+                    }
                 }
                 for child in children {
                     out.push_str("el.appendChild(");

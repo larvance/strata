@@ -149,14 +149,44 @@ impl From<f64> for JsValue {
     }
 }
 
+impl From<f32> for JsValue {
+    fn from(v: f32) -> Self {
+        Self::Number(v as f64)
+    }
+}
+
 impl From<i32> for JsValue {
     fn from(v: i32) -> Self {
         Self::Number(v as f64)
     }
 }
 
+impl From<u32> for JsValue {
+    fn from(v: u32) -> Self {
+        Self::Number(v as f64)
+    }
+}
+
+impl From<i64> for JsValue {
+    fn from(v: i64) -> Self {
+        Self::Number(v as f64)
+    }
+}
+
+impl From<u64> for JsValue {
+    fn from(v: u64) -> Self {
+        Self::Number(v as f64)
+    }
+}
+
 impl From<usize> for JsValue {
     fn from(v: usize) -> Self {
+        Self::Number(v as f64)
+    }
+}
+
+impl From<isize> for JsValue {
+    fn from(v: isize) -> Self {
         Self::Number(v as f64)
     }
 }
@@ -170,6 +200,18 @@ impl From<&str> for JsValue {
 impl From<String> for JsValue {
     fn from(v: String) -> Self {
         Self::String(v)
+    }
+}
+
+impl From<Vec<JsValue>> for JsValue {
+    fn from(v: Vec<JsValue>) -> Self {
+        Self::Array(v)
+    }
+}
+
+impl From<BTreeMap<String, JsValue>> for JsValue {
+    fn from(v: BTreeMap<String, JsValue>) -> Self {
+        Self::Object(v)
     }
 }
 

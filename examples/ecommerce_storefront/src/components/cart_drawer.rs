@@ -15,6 +15,10 @@ pub fn CartDrawer(state: StoreState) -> View {
     let discount_amount = subtotal * (discount_pct as f64 / 100.0);
     let final_total = (subtotal - discount_amount).max(0.0);
 
+    let close_state = state.clone();
+    let promo_input_state = state.clone();
+    let promo_apply_state = state.clone();
+
     rsx! {
         <div class="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm">
             <div class="w-full max-w-md h-full bg-neutral-900 border-l border-neutral-800 shadow-2xl flex flex-col justify-between p-6">
@@ -27,7 +31,7 @@ pub fn CartDrawer(state: StoreState) -> View {
                     </div>
                     <button
                         class="text-neutral-400 hover:text-white text-lg font-bold p-1"
-                        onclick={move |_| state.is_cart_open.set(false)}
+                        onclick={move |_| close_state.is_cart_open.set(false)}
                     >
                         {"✕"}
                     </button>
@@ -45,7 +49,8 @@ pub fn CartDrawer(state: StoreState) -> View {
                         rsx! {
                             <div class="flex flex-col gap-4">
                                 {items.into_iter().enumerate().map(|(idx, item)| {
-                                    let state_clone = state.clone();
+                                    let s_minus = state.clone();
+                                    let s_plus = state.clone();
 
                                     rsx! {
                                         <div class="flex items-center gap-4 py-3">
@@ -60,7 +65,7 @@ pub fn CartDrawer(state: StoreState) -> View {
                                                 <button
                                                     class="w-6 h-6 rounded bg-neutral-800 hover:bg-neutral-700 text-white text-xs"
                                                     onclick={move |_| {
-                                                        state_clone.cart.update(|c| {
+                                                        s_minus.cart.update(|c| {
                                                             if let Some(it) = c.get_mut(idx) {
                                                                 if it.quantity > 1 {
                                                                     it.quantity -= 1;
@@ -77,7 +82,7 @@ pub fn CartDrawer(state: StoreState) -> View {
                                                 <button
                                                     class="w-6 h-6 rounded bg-neutral-800 hover:bg-neutral-700 text-white text-xs"
                                                     onclick={move |_| {
-                                                        state_clone.cart.update(|c| {
+                                                        s_plus.cart.update(|c| {
                                                             if let Some(it) = c.get_mut(idx) {
                                                                 it.quantity += 1;
                                                             }
@@ -101,13 +106,13 @@ pub fn CartDrawer(state: StoreState) -> View {
                             type="text"
                             placeholder="Promo Code (Try APEX20)"
                             class="flex-1 h-9 bg-neutral-950 border border-neutral-800 rounded-lg px-3 text-xs text-white uppercase font-mono placeholder-neutral-500 focus:outline-none"
-                            oninput={move |val: String| state.promo_code.set(val)}
+                            oninput={move |val: String| promo_input_state.promo_code.set(val)}
                         />
                         <button
                             class="h-9 px-3 bg-neutral-800 hover:bg-neutral-700 text-white text-xs font-medium rounded-lg"
                             onclick={move |_| {
-                                if state.promo_code.get().trim() == "APEX20" {
-                                    state.discount_percent.set(20.0);
+                                if promo_apply_state.promo_code.get().trim() == "APEX20" {
+                                    promo_apply_state.discount_percent.set(20.0);
                                 }
                             }}
                         >

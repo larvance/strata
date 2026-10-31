@@ -44,7 +44,7 @@ pub fn ProductGrid(state: StoreState) -> View {
                             <button
                                 class="absolute bottom-4 right-4 h-10 px-4 rounded-full bg-white text-black font-semibold text-xs shadow-xl opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-200"
                                 onclick={move |_| {
-                                    state_clone.add_to_cart(p_clone.clone(), product.colors.first().copied().unwrap_or("#000000"));
+                                    state_clone.add_to_cart(p_clone.clone(), p_clone.colors.first().copied().unwrap_or("#000000"));
                                 }}
                             >
                                 {"+ Quick Add"}

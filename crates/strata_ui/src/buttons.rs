@@ -2,7 +2,8 @@
 
 #![allow(non_snake_case)]
 
-use strata_dom::{NodeBlueprint, View};
+use std::rc::Rc;
+use strata_dom::{Attribute, EventType, NodeBlueprint, View};
 use strata_macro::{component, rsx};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
@@ -30,6 +31,8 @@ pub fn Button(
     loading: Option<bool>,
     disabled: Option<bool>,
     class: Option<&'static str>,
+    onclick: Option<Rc<dyn Fn()>>,
+    children: Option<Vec<NodeBlueprint>>,
 ) -> View {
     let var = variant.unwrap_or_default();
     let sz = size.unwrap_or_default();
@@ -52,14 +55,28 @@ pub fn Button(
 
     let custom = class.unwrap_or("");
     let combined = format!("{base} {var_classes} {sz_classes} {custom}");
+    let classes: Vec<String> = combined.split_whitespace().map(|s| s.to_string()).collect();
 
-    rsx! {
-        <button class={combined} disabled={disabled.unwrap_or(false)}>
-            {if loading.unwrap_or(false) {
-                rsx! { <span class="animate-spin mr-2">{"◌"}</span> }
-            } else {
-                rsx! { <></> }
-            }}
-        </button>
+    let mut attrs = Vec::new();
+    if disabled.unwrap_or(false) {
+        attrs.push(Attribute::property("disabled", "true"));
     }
+    if let Some(cb) = onclick {
+        attrs.push(Attribute::event_listener(EventType::Click, move || cb()));
+    }
+
+    let mut btn_children = Vec::new();
+    if loading.unwrap_or(false) {
+        btn_children.push(rsx! { <span class="animate-spin mr-2">{"◌"}</span> }.root);
+    }
+    if let Some(ch) = children {
+        btn_children.extend(ch);
+    }
+
+    View::new(NodeBlueprint::element(
+        strata_dom::Tag::Button,
+        classes,
+        attrs,
+        btn_children,
+    ))
 }

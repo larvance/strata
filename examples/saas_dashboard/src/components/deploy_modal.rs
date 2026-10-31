@@ -14,6 +14,11 @@ pub fn DeployModal(state: DashboardState) -> View {
     let selected_model = use_signal(String::from("meta/llama-3.3-70b-instruct"));
     let selected_region = use_signal(String::from("us-east-1"));
 
+    let close_state_1 = state.clone();
+    let close_state_2 = state.clone();
+    let close_state_3 = state.clone();
+    let rc_change = replica_count.clone();
+
     rsx! {
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div class="w-full max-w-xl rounded-2xl bg-neutral-900 border border-neutral-800 shadow-2xl p-6 flex flex-col gap-6">
@@ -24,7 +29,7 @@ pub fn DeployModal(state: DashboardState) -> View {
                     </div>
                     <button
                         class="text-neutral-400 hover:text-white text-lg font-bold p-1"
-                        onclick={move |_| state.is_deploy_modal_open.set(false)}
+                        onclick={move |_| close_state_1.is_deploy_modal_open.set(false)}
                     >
                         {"✕"}
                     </button>
@@ -69,7 +74,7 @@ pub fn DeployModal(state: DashboardState) -> View {
                                 class="h-10 accent-indigo-500 cursor-pointer"
                                 onchange={move |val: String| {
                                     if let Ok(n) = val.parse::<usize>() {
-                                        replica_count.set(n);
+                                        rc_change.set(n);
                                     }
                                 }}
                             />
@@ -90,7 +95,7 @@ pub fn DeployModal(state: DashboardState) -> View {
                 <div class="flex items-center justify-end gap-3 pt-2">
                     <button
                         class="px-4 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-sm font-medium transition-colors"
-                        onclick={move |_| state.is_deploy_modal_open.set(false)}
+                        onclick={move |_| close_state_2.is_deploy_modal_open.set(false)}
                     >
                         {"Cancel"}
                     </button>
@@ -98,7 +103,7 @@ pub fn DeployModal(state: DashboardState) -> View {
                         class="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-sm font-medium shadow-lg shadow-indigo-600/30 transition-all"
                         onclick={move |_| {
                             println!("🚀 Provisioning model endpoint...");
-                            state.is_deploy_modal_open.set(false);
+                            close_state_3.is_deploy_modal_open.set(false);
                         }}
                     >
                         {"Confirm & Deploy"}

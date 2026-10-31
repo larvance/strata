@@ -25,6 +25,7 @@ pub fn ToolDock(state: StudioState) -> View {
                 } else {
                     "text-neutral-400 hover:text-white hover:bg-neutral-800/80"
                 };
+                let state = state.clone();
 
                 rsx! {
                     <button

@@ -9,6 +9,9 @@ pub fn Viewport3D(state: StudioState) -> View {
     let rotation = use_signal(0.45);
     let elapsed = use_signal(1.28);
 
+    let rotation_step = rotation.clone();
+    let elapsed_step = elapsed.clone();
+
     rsx! {
         <div class="flex-1 h-full bg-[#09090b] relative overflow-hidden flex flex-col justify-between p-6">
             <div class="flex items-center justify-between z-10">
@@ -24,13 +27,13 @@ pub fn Viewport3D(state: StudioState) -> View {
                 <div class="flex items-center gap-2">
                     <button
                         class="px-3 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-neutral-700 text-xs text-white font-mono"
-                        onclick={move |_| rotation.update(|r| *r += 0.1)}
+                        onclick={move |_| rotation_step.update(|r| *r += 0.1)}
                     >
                         {"Rotate +10°"}
                     </button>
                     <button
                         class="px-3 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-neutral-700 text-xs text-white font-mono"
-                        onclick={move |_| elapsed.update(|t| *t += 0.25)}
+                        onclick={move |_| elapsed_step.update(|t| *t += 0.25)}
                     >
                         {"Step Shader Time"}
                     </button>

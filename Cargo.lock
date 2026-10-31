@@ -80,6 +80,10 @@ dependencies = [
 [[package]]
 name = "strata_macro"
 version = "0.1.0"
+dependencies = [
+ "strata_dom",
+ "strata_js",
+]
 
 [[package]]
 name = "strata_platform"
@@ -96,7 +100,10 @@ version = "0.1.0"
 name = "strata_render"
 version = "0.1.0"
 dependencies = [
+ "strata_dom",
+ "strata_js",
  "strata_layout",
+ "strata_macro",
  "strata_style",
 ]
 

@@ -26,21 +26,25 @@ pub fn TopBar(state: StudioState) -> View {
 
             <div class="flex items-center gap-3">
                 <div class="flex items-center gap-1 bg-neutral-900 border border-neutral-800 rounded-lg p-1">
-                    <button
-                        class="w-7 h-7 flex items-center justify-center text-xs text-neutral-400 hover:text-white rounded hover:bg-neutral-800"
-                        onclick={move |_| state.zoom_level.update(|z| *z = (*z - 10.0).max(25.0))}
-                    >
-                        {"-"}
-                    </button>
+                    {let s = state.clone(); rsx! {
+                        <button
+                            class="w-7 h-7 flex items-center justify-center text-xs text-neutral-400 hover:text-white rounded hover:bg-neutral-800"
+                            onclick={move |_| s.zoom_level.update(|z| *z = (*z - 10.0).max(25.0))}
+                        >
+                            {"-"}
+                        </button>
+                    }}
                     <span class="px-2 text-xs font-mono font-medium text-neutral-200">
                         {format!("{}%", zoom as i32)}
                     </span>
-                    <button
-                        class="w-7 h-7 flex items-center justify-center text-xs text-neutral-400 hover:text-white rounded hover:bg-neutral-800"
-                        onclick={move |_| state.zoom_level.update(|z| *z = (*z + 10.0).min(500.0))}
-                    >
-                        {"+"}
-                    </button>
+                    {let s = state.clone(); rsx! {
+                        <button
+                            class="w-7 h-7 flex items-center justify-center text-xs text-neutral-400 hover:text-white rounded hover:bg-neutral-800"
+                            onclick={move |_| s.zoom_level.update(|z| *z = (*z + 10.0).min(500.0))}
+                        >
+                            {"+"}
+                        </button>
+                    }}
                 </div>
 
                 <button class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white text-xs font-medium shadow-md shadow-indigo-600/30 flex items-center gap-2">

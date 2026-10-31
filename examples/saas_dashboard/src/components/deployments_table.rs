@@ -31,24 +31,30 @@ pub fn DeploymentsTable(state: DashboardState) -> View {
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <button
-                        class={if filter == "ALL" { "px-3 py-1 text-xs rounded-lg bg-neutral-800 text-white font-medium" } else { "px-3 py-1 text-xs rounded-lg text-neutral-400 hover:text-white" }}
-                        onclick={move |_| state.status_filter.set("ALL".into())}
-                    >
-                        {"All"}
-                    </button>
-                    <button
-                        class={if filter == "RUNNING" { "px-3 py-1 text-xs rounded-lg bg-neutral-800 text-white font-medium" } else { "px-3 py-1 text-xs rounded-lg text-neutral-400 hover:text-white" }}
-                        onclick={move |_| state.status_filter.set("RUNNING".into())}
-                    >
-                        {"Running"}
-                    </button>
-                    <button
-                        class={if filter == "PROVISIONING" { "px-3 py-1 text-xs rounded-lg bg-neutral-800 text-white font-medium" } else { "px-3 py-1 text-xs rounded-lg text-neutral-400 hover:text-white" }}
-                        onclick={move |_| state.status_filter.set("PROVISIONING".into())}
-                    >
-                        {"Provisioning"}
-                    </button>
+                    {let s = state.clone(); rsx! {
+                        <button
+                            class={if filter == "ALL" { "px-3 py-1 text-xs rounded-lg bg-neutral-800 text-white font-medium" } else { "px-3 py-1 text-xs rounded-lg text-neutral-400 hover:text-white" }}
+                            onclick={move |_| s.status_filter.set("ALL".into())}
+                        >
+                            {"All"}
+                        </button>
+                    }}
+                    {let s = state.clone(); rsx! {
+                        <button
+                            class={if filter == "RUNNING" { "px-3 py-1 text-xs rounded-lg bg-neutral-800 text-white font-medium" } else { "px-3 py-1 text-xs rounded-lg text-neutral-400 hover:text-white" }}
+                            onclick={move |_| s.status_filter.set("RUNNING".into())}
+                        >
+                            {"Running"}
+                        </button>
+                    }}
+                    {let s = state.clone(); rsx! {
+                        <button
+                            class={if filter == "PROVISIONING" { "px-3 py-1 text-xs rounded-lg bg-neutral-800 text-white font-medium" } else { "px-3 py-1 text-xs rounded-lg text-neutral-400 hover:text-white" }}
+                            onclick={move |_| s.status_filter.set("PROVISIONING".into())}
+                        >
+                            {"Provisioning"}
+                        </button>
+                    }}
                 </div>
             </div>
 

@@ -10,3 +10,7 @@ description = "Procedural macros for Strata: rsx! declarative syntax, #[componen
 proc-macro = true
 
 [dependencies]
+
+[dev-dependencies]
+strata_dom = { path = "../strata_dom" }
+strata_js = { path = "../strata_js" }

@@ -1,5 +1,7 @@
 //! Unified 3D Engine: High-level Three.js ergonomics paired seamlessly with low-level Vulkan/OpenGL hardware pipelines.
 
+#![allow(unused_variables)]
+
 use std::collections::BTreeMap;
 use strata_style::Color;
 
@@ -211,4 +213,133 @@ impl Scene3D {
     pub fn add_light(&mut self, light: Light3D) {
         self.lights.push(light);
     }
+}
+
+// ---------------------------------------------------------------------------
+// Declarative 3D RSX Viewport Components
+// ---------------------------------------------------------------------------
+
+use strata_dom::{NodeBlueprint, Tag, View};
+use strata_macro::component;
+
+#[component]
+pub fn Canvas3D(class: Option<&'static str>, children: Option<Vec<NodeBlueprint>>) -> View {
+    let classes = class
+        .map(|c| c.split_whitespace().map(|s| s.to_string()).collect())
+        .unwrap_or_default();
+    View::new(NodeBlueprint::element(
+        Tag::Canvas,
+        classes,
+        Vec::new(),
+        children.unwrap_or_default(),
+    ))
+}
+
+#[component]
+pub fn PerspectiveCamera(
+    fov: Option<f32>,
+    aspect: Option<f32>,
+    near: Option<f32>,
+    far: Option<f32>,
+    position: Option<[f32; 3]>,
+    target: Option<[f32; 3]>,
+) -> View {
+    View::new(NodeBlueprint::element(
+        Tag::Custom("PerspectiveCamera"),
+        Vec::new(),
+        Vec::new(),
+        Vec::new(),
+    ))
+}
+
+#[component]
+pub fn AmbientLight(color: Option<&'static str>, intensity: Option<f32>) -> View {
+    View::new(NodeBlueprint::element(
+        Tag::Custom("AmbientLight"),
+        Vec::new(),
+        Vec::new(),
+        Vec::new(),
+    ))
+}
+
+#[component]
+pub fn DirectionalLight(
+    position: Option<[f32; 3]>,
+    color: Option<&'static str>,
+    intensity: Option<f32>,
+    cast_shadow: Option<bool>,
+) -> View {
+    View::new(NodeBlueprint::element(
+        Tag::Custom("DirectionalLight"),
+        Vec::new(),
+        Vec::new(),
+        Vec::new(),
+    ))
+}
+
+#[component]
+pub fn Mesh(
+    position: Option<[f32; 3]>,
+    rotation: Option<[f32; 3]>,
+    scale: Option<[f32; 3]>,
+    children: Option<Vec<NodeBlueprint>>,
+) -> View {
+    View::new(NodeBlueprint::element(
+        Tag::Custom("Mesh"),
+        Vec::new(),
+        Vec::new(),
+        children.unwrap_or_default(),
+    ))
+}
+
+#[component]
+pub fn BoxGeometry(width: Option<f32>, height: Option<f32>, depth: Option<f32>) -> View {
+    View::new(NodeBlueprint::element(
+        Tag::Custom("BoxGeometry"),
+        Vec::new(),
+        Vec::new(),
+        Vec::new(),
+    ))
+}
+
+#[component]
+pub fn SphereGeometry(
+    radius: Option<f32>,
+    width_segments: Option<u32>,
+    height_segments: Option<u32>,
+) -> View {
+    View::new(NodeBlueprint::element(
+        Tag::Custom("SphereGeometry"),
+        Vec::new(),
+        Vec::new(),
+        Vec::new(),
+    ))
+}
+
+#[component]
+pub fn StandardMaterial(
+    color: Option<&'static str>,
+    roughness: Option<f32>,
+    metalness: Option<f32>,
+) -> View {
+    View::new(NodeBlueprint::element(
+        Tag::Custom("StandardMaterial"),
+        Vec::new(),
+        Vec::new(),
+        Vec::new(),
+    ))
+}
+
+#[component]
+pub fn ShaderMaterial(
+    glsl_fragment: Option<&'static str>,
+    uniform_time: Option<f32>,
+    uniforms: Option<strata_js::JsValue>,
+) -> View {
+    View::new(NodeBlueprint::element(
+        Tag::Custom("ShaderMaterial"),
+        Vec::new(),
+        Vec::new(),
+        Vec::new(),
+    ))
 }

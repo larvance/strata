@@ -19,6 +19,7 @@ pub fn FilterBar(state: StoreState) -> View {
                     } else {
                         "bg-neutral-900 text-neutral-400 hover:text-white border border-neutral-800"
                     };
+                    let state = state.clone();
 
                     rsx! {
                         <button
