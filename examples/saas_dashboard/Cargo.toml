@@ -1,0 +1,10 @@
+[package]
+name = "saas_dashboard"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Enterprise AI Cloud & Infrastructure Analytics Dashboard written in Strata"
+
+[dependencies]
+strata = { path = "../../crates/strata" }

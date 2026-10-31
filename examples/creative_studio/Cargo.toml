@@ -1,0 +1,10 @@
+[package]
+name = "creative_studio"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Professional Vector Canvas & Node Design Studio in Strata"
+
+[dependencies]
+strata = { path = "../../crates/strata" }
