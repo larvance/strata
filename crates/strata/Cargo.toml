@@ -23,3 +23,4 @@ strata_storage = { path = "../strata_storage" }
 strata_web_api = { path = "../strata_web_api" }
 strata_parallel = { path = "../strata_parallel" }
 strata_tui = { path = "../strata_tui" }
+strata_codegen_js = { path = "../strata_codegen_js" }

@@ -8,3 +8,5 @@ description = "Pure JavaScript ESM code generator and AST transpiler for Strata"
 
 [dependencies]
 strata_dom = { path = "../strata_dom" }
+strata_style = { path = "../strata_style" }
+strata_primitives = { path = "../strata_primitives" }

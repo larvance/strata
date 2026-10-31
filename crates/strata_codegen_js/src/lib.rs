@@ -1,52 +1,26 @@
-//! Strata Codegen JS: Source-to-source transpiler emitting pure JavaScript & DOM code.
+//! Strata Codegen JS: Pure JavaScript ESM code generator, AST transpiler, and Web-WASM harness.
+//!
+//! Provides dual-mode web compilation:
+//! - **Mode A (Web-WASM):** HTML5 canvas surface harness with HiDPI scaling and event pumps.
+//! - **Mode B (Web-JS):** Lightweight vanilla ESM JS transpilation with micro reactive runtime and CSS extraction.
 
-use strata_dom::NodeBlueprint;
+pub mod css_extractor;
+pub mod runtime;
+pub mod target;
+pub mod transpiler;
+pub mod wasm_harness;
 
-pub struct JsTranspiler;
+pub use css_extractor::CssExtractor;
+pub use runtime::JsRuntimeEmitter;
+pub use target::{WebBuildArtifacts, WebBuildConfig, WebTargetBuilder, WebTargetMode};
+pub use transpiler::JsTranspiler;
+pub use wasm_harness::WasmHarnessGenerator;
 
-impl JsTranspiler {
-    /// Transpiles an RSX NodeBlueprint into pure vanilla JavaScript DOM calls.
-    pub fn emit_js(blueprint: &NodeBlueprint) -> String {
-        let mut output = String::new();
-        Self::render_node(blueprint, &mut output);
-        output
-    }
-
-    fn render_node(blueprint: &NodeBlueprint, out: &mut String) {
-        match blueprint {
-            NodeBlueprint::Element { tag, classes, attributes, children } => {
-                out.push_str(&format!(
-                    "(() => {{ const el = document.createElement('{:?}'); ",
-                    tag
-                ));
-                if !classes.is_empty() {
-                    out.push_str(&format!("el.className = '{}'; ", classes.join(" ")));
-                }
-                for attr in attributes {
-                    if let strata_dom::Attribute::Property { key, value } = attr {
-                        out.push_str(&format!("el.setAttribute('{}', '{}'); ", key, value));
-                    }
-                }
-                for child in children {
-                    out.push_str("el.appendChild(");
-                    Self::render_node(child, out);
-                    out.push_str("); ");
-                }
-                out.push_str("return el; })()");
-            }
-            NodeBlueprint::Text(txt) => {
-                out.push_str(&format!("document.createTextNode('{}')", txt));
-            }
-            NodeBlueprint::Fragment(children) => {
-                out.push_str("(() => { const frag = document.createDocumentFragment(); ");
-                for child in children {
-                    out.push_str("frag.appendChild(");
-                    Self::render_node(child, out);
-                    out.push_str("); ");
-                }
-                out.push_str("return frag; })()");
-            }
-            _ => out.push_str("document.createComment('')"),
-        }
-    }
+/// Web codegen prelude module.
+pub mod prelude {
+    pub use super::css_extractor::CssExtractor;
+    pub use super::runtime::JsRuntimeEmitter;
+    pub use super::target::{WebBuildArtifacts, WebBuildConfig, WebTargetBuilder, WebTargetMode};
+    pub use super::transpiler::JsTranspiler;
+    pub use super::wasm_harness::WasmHarnessGenerator;
 }
