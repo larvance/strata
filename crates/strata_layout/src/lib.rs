@@ -39,12 +39,20 @@ impl LayoutNode {
         self.geometry.width = match self.style.width {
             strata_style::Dimension::Px(px) => px,
             strata_style::Dimension::Percent(pct) => available_width * (pct / 100.0),
+            strata_style::Dimension::Vw(vw) => available_width * (vw / 100.0),
+            strata_style::Dimension::Vh(vh) => available_height * (vh / 100.0),
+            strata_style::Dimension::Rem(rem) => rem * 16.0,
+            strata_style::Dimension::Em(em) => em * 16.0,
             strata_style::Dimension::Auto => available_width,
         };
 
         self.geometry.height = match self.style.height {
             strata_style::Dimension::Px(px) => px,
             strata_style::Dimension::Percent(pct) => available_height * (pct / 100.0),
+            strata_style::Dimension::Vw(vw) => available_width * (vw / 100.0),
+            strata_style::Dimension::Vh(vh) => available_height * (vh / 100.0),
+            strata_style::Dimension::Rem(rem) => rem * 16.0,
+            strata_style::Dimension::Em(em) => em * 16.0,
             strata_style::Dimension::Auto => available_height,
         };
 

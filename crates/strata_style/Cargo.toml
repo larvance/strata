@@ -7,3 +7,4 @@ license.workspace = true
 description = "Pure Rust CSS engine, cascade solver, and Tailwind CSS JIT compiler"
 
 [dependencies]
+strata_primitives = { path = "../strata_primitives" }

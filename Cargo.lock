@@ -110,6 +110,9 @@ dependencies = [
 [[package]]
 name = "strata_style"
 version = "0.1.0"
+dependencies = [
+ "strata_primitives",
+]
 
 [[package]]
 name = "strata_ui"

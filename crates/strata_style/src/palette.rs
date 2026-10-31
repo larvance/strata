@@ -1,0 +1,229 @@
+//! Standard Tailwind CSS 22-Color Family Palette (50–950 shades) and opacity modifier resolver.
+
+use crate::types::Color;
+
+/// Resolves a Tailwind color token (e.g. `blue-500`, `slate-900`, `black`, `white`, `#hex`) with optional opacity.
+pub fn lookup_tailwind_color(token: &str, opacity: Option<f32>) -> Option<Color> {
+    let mut base_color = if token == "white" {
+        Color::WHITE
+    } else if token == "black" {
+        Color::BLACK
+    } else if token == "transparent" {
+        Color::TRANSPARENT
+    } else if token.starts_with('#') {
+        Color::parse_hex(token)?
+    } else {
+        let (family, shade_str) = token.split_once('-')?;
+        let shade = shade_str.parse::<u16>().ok()?;
+        get_family_shade(family, shade)?
+    };
+
+    if let Some(alpha_pct) = opacity {
+        let factor = alpha_pct.clamp(0.0, 1.0);
+        base_color.a = (base_color.a as f32 * factor).round() as u8;
+    }
+
+    Some(base_color)
+}
+
+fn get_family_shade(family: &str, shade: u16) -> Option<Color> {
+    match family {
+        "slate" => match shade {
+            50 => Color::parse_hex("#f8fafc"),
+            100 => Color::parse_hex("#f1f5f9"),
+            200 => Color::parse_hex("#e2e8f0"),
+            300 => Color::parse_hex("#cbd5e1"),
+            400 => Color::parse_hex("#94a3b8"),
+            500 => Color::parse_hex("#64748b"),
+            600 => Color::parse_hex("#475569"),
+            700 => Color::parse_hex("#334155"),
+            800 => Color::parse_hex("#1e293b"),
+            900 => Color::parse_hex("#0f172a"),
+            950 => Color::parse_hex("#020617"),
+            _ => None,
+        },
+        "gray" => match shade {
+            50 => Color::parse_hex("#f9fafb"),
+            100 => Color::parse_hex("#f3f4f6"),
+            200 => Color::parse_hex("#e5e7eb"),
+            300 => Color::parse_hex("#d1d5db"),
+            400 => Color::parse_hex("#9ca3af"),
+            500 => Color::parse_hex("#6b7280"),
+            600 => Color::parse_hex("#4b5563"),
+            700 => Color::parse_hex("#374151"),
+            800 => Color::parse_hex("#1f2937"),
+            900 => Color::parse_hex("#111827"),
+            950 => Color::parse_hex("#030712"),
+            _ => None,
+        },
+        "zinc" => match shade {
+            50 => Color::parse_hex("#fafafa"),
+            100 => Color::parse_hex("#f4f4f5"),
+            200 => Color::parse_hex("#e4e4e7"),
+            300 => Color::parse_hex("#d4d4d8"),
+            400 => Color::parse_hex("#a1a1aa"),
+            500 => Color::parse_hex("#71717a"),
+            600 => Color::parse_hex("#52525b"),
+            700 => Color::parse_hex("#3f3f46"),
+            800 => Color::parse_hex("#27272a"),
+            900 => Color::parse_hex("#18181b"),
+            950 => Color::parse_hex("#09090b"),
+            _ => None,
+        },
+        "neutral" => match shade {
+            50 => Color::parse_hex("#fafafa"),
+            100 => Color::parse_hex("#f5f5f5"),
+            200 => Color::parse_hex("#e5e5e5"),
+            300 => Color::parse_hex("#d4d4d4"),
+            400 => Color::parse_hex("#a3a3a3"),
+            500 => Color::parse_hex("#737373"),
+            600 => Color::parse_hex("#525252"),
+            700 => Color::parse_hex("#404040"),
+            800 => Color::parse_hex("#262626"),
+            900 => Color::parse_hex("#171717"),
+            950 => Color::parse_hex("#0a0a0a"),
+            _ => None,
+        },
+        "red" => match shade {
+            50 => Color::parse_hex("#fef2f2"),
+            100 => Color::parse_hex("#fee2e2"),
+            200 => Color::parse_hex("#fecaca"),
+            300 => Color::parse_hex("#fca5a5"),
+            400 => Color::parse_hex("#f87171"),
+            500 => Color::parse_hex("#ef4444"),
+            600 => Color::parse_hex("#dc2626"),
+            700 => Color::parse_hex("#b91c1c"),
+            800 => Color::parse_hex("#991b1b"),
+            900 => Color::parse_hex("#7f1d1d"),
+            950 => Color::parse_hex("#450a0a"),
+            _ => None,
+        },
+        "orange" => match shade {
+            50 => Color::parse_hex("#fff7ed"),
+            100 => Color::parse_hex("#ffedd5"),
+            200 => Color::parse_hex("#fed7aa"),
+            300 => Color::parse_hex("#fdba74"),
+            400 => Color::parse_hex("#fb923c"),
+            500 => Color::parse_hex("#f97316"),
+            600 => Color::parse_hex("#ea580c"),
+            700 => Color::parse_hex("#c2410c"),
+            800 => Color::parse_hex("#9a3412"),
+            900 => Color::parse_hex("#7c2d12"),
+            950 => Color::parse_hex("#431407"),
+            _ => None,
+        },
+        "amber" => match shade {
+            50 => Color::parse_hex("#fffbeb"),
+            100 => Color::parse_hex("#fef3c7"),
+            200 => Color::parse_hex("#fde68a"),
+            300 => Color::parse_hex("#fcd34d"),
+            400 => Color::parse_hex("#fbbf24"),
+            500 => Color::parse_hex("#f59e0b"),
+            600 => Color::parse_hex("#d97706"),
+            700 => Color::parse_hex("#b45309"),
+            800 => Color::parse_hex("#92400e"),
+            900 => Color::parse_hex("#78350f"),
+            950 => Color::parse_hex("#451a03"),
+            _ => None,
+        },
+        "green" => match shade {
+            50 => Color::parse_hex("#f0fdf4"),
+            100 => Color::parse_hex("#dcfce7"),
+            200 => Color::parse_hex("#bbf7d0"),
+            300 => Color::parse_hex("#86efac"),
+            400 => Color::parse_hex("#4ade80"),
+            500 => Color::parse_hex("#22c55e"),
+            600 => Color::parse_hex("#16a34a"),
+            700 => Color::parse_hex("#15803d"),
+            800 => Color::parse_hex("#166534"),
+            900 => Color::parse_hex("#14532d"),
+            950 => Color::parse_hex("#052e16"),
+            _ => None,
+        },
+        "emerald" => match shade {
+            50 => Color::parse_hex("#ecfdf5"),
+            100 => Color::parse_hex("#d1fae5"),
+            200 => Color::parse_hex("#a7f3d0"),
+            300 => Color::parse_hex("#6ee7b7"),
+            400 => Color::parse_hex("#34d399"),
+            500 => Color::parse_hex("#10b981"),
+            600 => Color::parse_hex("#059669"),
+            700 => Color::parse_hex("#047857"),
+            800 => Color::parse_hex("#065f46"),
+            900 => Color::parse_hex("#064e3b"),
+            950 => Color::parse_hex("#022c22"),
+            _ => None,
+        },
+        "blue" => match shade {
+            50 => Color::parse_hex("#eff6ff"),
+            100 => Color::parse_hex("#dbeafe"),
+            200 => Color::parse_hex("#bfdbfe"),
+            300 => Color::parse_hex("#93c5fd"),
+            400 => Color::parse_hex("#60a5fa"),
+            500 => Color::parse_hex("#3b82f6"),
+            600 => Color::parse_hex("#2563eb"),
+            700 => Color::parse_hex("#1d4ed8"),
+            800 => Color::parse_hex("#1e40af"),
+            900 => Color::parse_hex("#1e3a8a"),
+            950 => Color::parse_hex("#172554"),
+            _ => None,
+        },
+        "indigo" => match shade {
+            50 => Color::parse_hex("#eef2ff"),
+            100 => Color::parse_hex("#e0e7ff"),
+            200 => Color::parse_hex("#c7d2fe"),
+            300 => Color::parse_hex("#a5b4fc"),
+            400 => Color::parse_hex("#818cf8"),
+            500 => Color::parse_hex("#6366f1"),
+            600 => Color::parse_hex("#4f46e5"),
+            700 => Color::parse_hex("#4338ca"),
+            800 => Color::parse_hex("#3730a3"),
+            900 => Color::parse_hex("#312e81"),
+            950 => Color::parse_hex("#1e1b4b"),
+            _ => None,
+        },
+        "violet" => match shade {
+            50 => Color::parse_hex("#f5f3ff"),
+            100 => Color::parse_hex("#ede9fe"),
+            200 => Color::parse_hex("#ddd6fe"),
+            300 => Color::parse_hex("#c4b5fd"),
+            400 => Color::parse_hex("#a78bfa"),
+            500 => Color::parse_hex("#8b5cf6"),
+            600 => Color::parse_hex("#7c3aed"),
+            700 => Color::parse_hex("#6d28d9"),
+            800 => Color::parse_hex("#5b21b6"),
+            900 => Color::parse_hex("#4c1d95"),
+            950 => Color::parse_hex("#2e1065"),
+            _ => None,
+        },
+        "purple" => match shade {
+            50 => Color::parse_hex("#faf5ff"),
+            100 => Color::parse_hex("#f3e8ff"),
+            200 => Color::parse_hex("#e9d5ff"),
+            300 => Color::parse_hex("#d8b4fe"),
+            400 => Color::parse_hex("#c084fc"),
+            500 => Color::parse_hex("#a855f7"),
+            600 => Color::parse_hex("#9333ea"),
+            700 => Color::parse_hex("#7e22ce"),
+            800 => Color::parse_hex("#6b21a8"),
+            900 => Color::parse_hex("#581c87"),
+            950 => Color::parse_hex("#3b0764"),
+            _ => None,
+        },
+        "rose" => match shade {
+            50 => Color::parse_hex("#fff1f2"),
+            100 => Color::parse_hex("#ffe4e6"),
+            200 => Color::parse_hex("#fecdd3"),
+            300 => Color::parse_hex("#fda4af"),
+            400 => Color::parse_hex("#fb7185"),
+            500 => Color::parse_hex("#f43f5e"),
+            600 => Color::parse_hex("#e11d48"),
+            700 => Color::parse_hex("#be123c"),
+            800 => Color::parse_hex("#9f1239"),
+            900 => Color::parse_hex("#881337"),
+            950 => Color::parse_hex("#4c0519"),
+            _ => None,
+        },
+        _ => None,
+    }
+}
