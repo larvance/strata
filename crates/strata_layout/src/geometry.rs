@@ -38,6 +38,21 @@ impl Rect {
     #[inline(always)]
     pub fn max_y(self) -> f32 { self.y + self.height }
 
+    /// Computes intersection with another rectangle if overlapping.
+    #[inline]
+    pub fn intersect(self, other: Self) -> Option<Self> {
+        let x0 = self.min_x().max(other.min_x());
+        let y0 = self.min_y().max(other.min_y());
+        let x1 = self.max_x().min(other.max_x());
+        let y1 = self.max_y().min(other.max_y());
+
+        if x1 > x0 && y1 > y0 {
+            Some(Self::new(x0, y0, x1 - x0, y1 - y0))
+        } else {
+            None
+        }
+    }
+
     /// Chromium subpixel pixel snapping via `LayoutUnit` (1/64th px fixed point).
     pub fn snap_to_pixel(self) -> Self {
         Self {

@@ -105,6 +105,7 @@ dependencies = [
  "strata_js",
  "strata_layout",
  "strata_macro",
+ "strata_primitives",
  "strata_style",
 ]
 

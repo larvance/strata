@@ -54,6 +54,20 @@ impl Rgba {
         )
     }
 
+    #[inline(always)]
+    pub fn r(self) -> f32 { self.r as f32 / 255.0 }
+    #[inline(always)]
+    pub fn g(self) -> f32 { self.g as f32 / 255.0 }
+    #[inline(always)]
+    pub fn b(self) -> f32 { self.b as f32 / 255.0 }
+    #[inline(always)]
+    pub fn a(self) -> f32 { self.a as f32 / 255.0 }
+
+    #[inline(always)]
+    pub fn to_rgba8(self) -> (u8, u8, u8, u8) {
+        (self.r, self.g, self.b, self.a)
+    }
+
     /// Parses CSS hex color strings: `#RGB`, `#RGBA`, `#RRGGBB`, `#RRGGBBAA`.
     /// Operates with zero heap allocations.
     pub fn parse_hex(hex: &str) -> Option<Self> {

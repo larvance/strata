@@ -7,6 +7,7 @@ license.workspace = true
 description = "High-performance Display List, Stacking Context Compositor, and GPU rasterization pipeline"
 
 [dependencies]
+strata_primitives = { path = "../strata_primitives" }
 strata_style = { path = "../strata_style" }
 strata_layout = { path = "../strata_layout" }
 strata_dom = { path = "../strata_dom" }
