@@ -1,0 +1,41 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/strata",
+    "crates/strata_dom",
+    "crates/strata_macro",
+    "crates/strata_style",
+    "crates/strata_layout",
+    "crates/strata_render",
+    "crates/strata_js",
+    "crates/strata_platform",
+    "crates/strata_codegen_js",
+    "crates/strata_cli",
+    "crates/strata_icons",
+    "crates/strata_ui",
+    "crates/strata_primitives",
+    "examples/saas_dashboard",
+    "examples/ecommerce_storefront",
+    "examples/creative_studio",
+]
+
+[workspace.package]
+version = "0.1.0"
+authors = ["larvance <64753457+larvance@users.noreply.github.com>"]
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/larvance/strata"
+homepage = "https://github.com/larvance/strata"
+documentation = "https://docs.rs/strata"
+keywords = ["gui", "frontend", "framework", "css", "tailwind"]
+categories = ["gui", "web-programming", "rendering"]
+
+[profile.dev]
+opt-level = 1
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true

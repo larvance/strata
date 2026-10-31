@@ -1,0 +1,19 @@
+[package]
+name = "strata"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Universal frontend framework in pure Rust with pixel-perfect CSS emulation and React/TSX ergonomics"
+
+[dependencies]
+strata_dom = { path = "../strata_dom" }
+strata_macro = { path = "../strata_macro" }
+strata_style = { path = "../strata_style" }
+strata_layout = { path = "../strata_layout" }
+strata_render = { path = "../strata_render" }
+strata_js = { path = "../strata_js" }
+strata_platform = { path = "../strata_platform" }
+strata_icons = { path = "../strata_icons" }
+strata_ui = { path = "../strata_ui" }
+strata_primitives = { path = "../strata_primitives" }

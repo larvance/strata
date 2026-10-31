@@ -1,0 +1,15 @@
+[package]
+name = "strata_cli"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Universal Developer CLI and Cross-Platform Packaging Toolchain for Strata"
+
+[[bin]]
+name = "strata"
+path = "src/main.rs"
+
+[dependencies]
+strata = { path = "../strata" }
+strata_codegen_js = { path = "../strata_codegen_js" }

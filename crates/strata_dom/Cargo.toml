@@ -1,0 +1,9 @@
+[package]
+name = "strata_dom"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Core DOM, reactive signals, and synthetic event routing for Strata"
+
+[dependencies]
